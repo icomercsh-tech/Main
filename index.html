@@ -62,13 +62,16 @@ body{
 .piece.on{background:radial-gradient(circle at 35% 30%,#fff3cf,var(--gold));border-color:#8d6f22;box-shadow:0 0 8px rgba(226,183,78,.5)}
 
 /* ---------- tabs ---------- */
-.tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;background:#0d0d13;
+.tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;background:#0d0d13;
   border:1px solid var(--line);border-radius:14px;padding:5px;margin-bottom:16px;position:sticky;top:0;z-index:30;
   box-shadow:0 8px 18px rgba(0,0,0,.55)}
 .tab{border:0;background:transparent;color:var(--dim);font-size:14px;font-weight:600;
   padding:11px 6px;border-radius:10px;cursor:pointer;letter-spacing:.02em}
 .tab.active{background:linear-gradient(180deg,#242433,#1a1a24);color:var(--gold2);
   box-shadow:inset 0 0 0 1px rgba(226,183,78,.35)}
+.tab.hot{color:#8fe3ef}
+.tab.hot.active{color:#d6fbff;box-shadow:inset 0 0 0 1px rgba(79,216,232,.42);
+  background:linear-gradient(180deg,#123038,#0e2027)}
 .tab:active{transform:scale(.99)}
 
 /* ---------- cards ---------- */
@@ -238,6 +241,75 @@ input::placeholder{color:#5a5a70}
 .legend{display:flex;gap:12px;flex-wrap:wrap;font-size:11px;color:var(--dim2);margin-top:10px}
 .legend i{display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:4px}
 
+
+/* ---------- online room (mp) ---------- */
+.mp-roomhead{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.mp-codewrap{display:flex;align-items:baseline;gap:8px}
+.mp-code-label{font-size:10px;letter-spacing:.2em;color:var(--dim2)}
+.mp-code{font-size:26px;font-weight:800;letter-spacing:.05em;color:var(--gold2);font-variant-numeric:tabular-nums;line-height:1.1}
+.mp-codesub{font-size:11.5px;color:var(--dim);display:flex;align-items:center;gap:6px;margin-top:3px}
+.okdot,.noodot{width:7px;height:7px;border-radius:50%;display:inline-block;flex:0 0 auto}
+.okdot{background:#5ee0a0;box-shadow:0 0 6px rgba(94,224,160,.8)}
+.noodot{background:#ff5470;box-shadow:0 0 6px rgba(255,84,112,.7)}
+.mp-players{display:flex;flex-direction:column;gap:6px}
+.mp-p{display:flex;align-items:center;gap:8px;font-size:13px;padding:7px 9px;border-radius:10px;
+  background:#101017;border:1px solid #1c1c27}
+.mp-p.me{border-color:rgba(226,183,78,.42);background:rgba(226,183,78,.06)}
+.mp-p.off{opacity:.55}
+.mp-p .live{width:7px;height:7px;border-radius:50%;background:#3b3b4c;flex:0 0 auto}
+.mp-p .live.on{background:#5ee0a0}
+.mp-p .nm{flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  font-weight:600;color:#e6e6f0}
+.mp-p .nm i{font-style:normal;color:var(--gold);font-size:10.5px;margin-left:2px}
+.mp-p .nm .hostmark{font-size:9.5px;color:#9becf6;border:1px solid rgba(79,216,232,.4);
+  border-radius:5px;padding:1px 4px;margin-left:4px;font-weight:600;vertical-align:1px}
+.mp-p .sc{font-variant-numeric:tabular-nums;color:var(--gold2);font-weight:700}
+.mp-mini{font-size:10.5px;color:var(--dim);border:1px solid #26263a;border-radius:6px;padding:2px 6px;white-space:nowrap}
+.mp-mini.ok{color:#a6f2cc;border-color:rgba(94,224,160,.45);background:rgba(94,224,160,.08)}
+.mp-mini.gold{color:var(--gold2);border-color:rgba(226,183,78,.45);background:rgba(226,183,78,.08)}
+.mp-kick{margin-left:auto;font-size:10.5px;border:1px solid #3a2530;background:#1c1218;color:#ffb3c1;
+  border-radius:7px;padding:3px 7px;cursor:pointer}
+.mp-turn{font-size:12.5px;color:var(--dim);margin:0 0 2px}
+.mp-turn b{color:#e6e6f0}
+.mp-badge-line:empty{display:none}
+.mp-invite{background:#0c0c12;border:1px solid #22222f;border-radius:10px;padding:9px 11px;
+  font-size:11.5px;color:#9becf6;word-break:break-all;margin-top:2px}
+.mp-invite code{font-family:inherit}
+.mp-mine{margin-top:6px}
+.mp-word{display:inline-block;font-size:12.5px;border:1px solid #26263a;border-radius:8px;
+  padding:4px 9px;color:#cfcfdd;background:#12121a}
+.mp-word.on{border-color:rgba(226,183,78,.5);color:var(--gold2);background:rgba(226,183,78,.08)}
+.mp-answers{display:flex;flex-direction:column;gap:6px}
+.mp-ans{display:grid;grid-template-columns:auto 1fr auto;gap:8px;align-items:center;font-size:12.5px;
+  padding:8px 10px;border-radius:10px;background:#101017;border:1px solid #1e1e29}
+.mp-ans.hit{border-color:rgba(94,224,160,.45);background:rgba(94,224,160,.07)}
+.mp-ans .nm{font-weight:600;color:#e6e6f0}
+.mp-ans .nm i{font-style:normal;color:var(--gold);font-size:10px}
+.mp-ans .wd{color:#c9c9d8;word-break:keep-all}
+.mp-ans .mk{font-weight:800;color:#7d7d94}
+.mp-ans.hit .mk{color:#5ee0a0}
+.mp-ranks,.mp-hlist{display:flex;flex-direction:column;gap:6px}
+.mp-rankrow{display:grid;grid-template-columns:38px 1fr auto;gap:10px;align-items:center;font-size:13.5px;
+  padding:9px 10px;border-radius:10px;background:#101017;border:1px solid #1e1e29}
+.mp-rankrow.me{border-color:rgba(226,183,78,.45);background:rgba(226,183,78,.06)}
+.mp-rankrow .rk{font-weight:800;color:var(--gold2);text-align:center}
+.mp-rankrow .sc{font-variant-numeric:tabular-nums;color:var(--gold2);font-weight:800}
+.mp-hrow{display:grid;grid-template-columns:auto auto 1fr auto;gap:8px;align-items:center;font-size:11.5px;
+  padding:7px 9px;border-radius:9px;background:#101017;border:1px solid #1e1e29;color:var(--dim)}
+.mp-hrow .r{color:var(--dim2)}
+.mp-hrow .h{color:#dcdce8;font-weight:600}
+.mp-hrow .w{color:#9becf6}
+.mp-hrow .p{color:var(--gold2);text-align:right}
+.mp-waitlist{display:flex;flex-direction:column;gap:5px;margin-top:9px}
+.mp-wl{font-size:12.5px;color:var(--dim);display:flex;gap:7px;align-items:center}
+.mp-wl.ok{color:#a6f2cc}
+.tophint{font-size:10.5px;color:#e2b74e;margin-top:5px}
+@media(max-width:420px){
+  .mp-code{font-size:22px}
+  .tab{font-size:12.5px;padding:10px 3px}
+  .mp-roomhead .btn{padding:8px 10px;font-size:12px}
+}
+
 </style>
 </head>
 <body>
@@ -259,6 +331,7 @@ input::placeholder{color:#5a5a70}
     <button class="tab active" data-act="mode" data-mode="guesser">추리자</button>
     <button class="tab" data-act="mode" data-mode="setter">출제자</button>
     <button class="tab" data-act="mode" data-mode="lab">테스트랩</button>
+    <button class="tab hot" data-act="mode" data-mode="online">온라인 방</button>
   </nav>
 
   <main id="view"></main>
@@ -1932,6 +2005,469 @@ input::placeholder{color:#5a5a70}
 
 </script>
 <script>
+/* ==========================================================================
+   mp_core.js — 히든 워드 "온라인 방" 게임 코어
+   * 호스트 기기에서만 실행되는 권위(authoritative) 상태 기계.
+   * DOM·네트워크에 의존하지 않는다(단위 테스트용으로 quickjs에서 그대로 로드).
+   * 각 플레이어에게는 game.viewFor(pid)만 전달한다. 다른 사람의 후보 단어와
+     아직 공개되지 않은 히든 워드는 그 사람의 뷰에 절대 포함되지 않는다.
+   ========================================================================== */
+(function (global) {
+  'use strict';
+  var HW = global.HW;
+  var MAXP = 6, MINP = 2, MAXHINT = 10, CAND = 5;
+
+  function stageOf(n) { return n <= 3 ? 1 : (n <= 7 ? 2 : 3); }
+  function baseOf(st) { return st === 1 ? 3 : (st === 2 ? 2 : 1); }
+  function stageLabel(st) { return st === 1 ? '1차 (힌트 1~3)' : st === 2 ? '2차 (힌트 4~7)' : '3차 (힌트 8~10)'; }
+
+  function shuffle(arr, seed) {
+    var a = arr.slice(), s = (seed >>> 0) || 12345;
+    for (var i = a.length - 1; i > 0; i--) {
+      s = (s * 1664525 + 1013904223) >>> 0;
+      var j = s % (i + 1), t = a[i]; a[i] = a[j]; a[j] = t;
+    }
+    return a;
+  }
+  function clone(o) { return o == null ? o : JSON.parse(JSON.stringify(o)); }
+  function genCode() { return String(1000 + Math.floor(Math.random() * 9000)); }
+
+  function Game(seed) {
+    this.seed = ((seed >>> 0) || 1);
+    this.code = '';
+    this.phase = 'lobby';          // lobby | pick | hint | guess | reveal | roundEnd | final
+    this.round = 1;
+    this.turn = 0;                 // order 안에서의 현재 출제자 인덱스
+    this.order = [];               // 출제 순서(플레이어 id)
+    this.players = [];             // {id,name,score,pieces,host,connected,cands[],hidden,used[],picked}
+    this.hostId = null;
+    this.hints = [];               // {word,total} — 모두에게 공개되는 정보
+    this.hintEnded = false;
+    this.highlight = -1;           // 강조 공개할 힌트 인덱스
+    this.guesses = {};             // pid -> {words:[], piece:bool}
+    this.reveal = null;            // 정산 결과(공개)
+    this.history = [];             // 지난 턴 공개 기록
+    this.roundScores = [];         // 라운드 종료 시점 순위 스냅샷
+    this.final = null;             // 최종 순위
+    this.usedWords = {};           // 게임 전체에서 단어 중복 지급 방지
+  }
+
+  /* ---------------- 조회 ---------------- */
+  Game.prototype.player = function (id) {
+    for (var i = 0; i < this.players.length; i++) if (this.players[i].id === id) return this.players[i];
+    return null;
+  };
+  Game.prototype.hinter = function () {
+    if (!this.order.length || this.phase === 'lobby') return null;
+    return this.player(this.order[this.turn]) || null;
+  };
+  Game.prototype.nameOf = function (id) { var p = this.player(id); return p ? p.name : '?'; };
+  Game.prototype.mult = function () { return this.round === 2 ? 2 : 1; };
+  Game.prototype.poolFor = function (p) {
+    var used = p.used || [];
+    return (p.cands || []).filter(function (w) { return used.indexOf(w) < 0; });
+  };
+  Game.prototype.pendingPick = function () {
+    var n = 0;
+    for (var i = 0; i < this.players.length; i++) if (!this.players[i].picked) n++;
+    return n;
+  };
+  Game.prototype.pendingGuess = function () {
+    var h = this.hinter(); if (!h) return 0;
+    var n = 0;
+    for (var i = 0; i < this.players.length; i++) {
+      var p = this.players[i];
+      if (p.id === h.id) continue;
+      if (!this.guesses[p.id]) n++;
+    }
+    return n;
+  };
+
+  /* ---------------- 참가자 ---------------- */
+  Game.prototype.addPlayer = function (id, name, isHost) {
+    var ex = this.player(id);
+    if (ex) {
+      ex.connected = true;
+      if (name && String(name).trim()) ex.name = String(name).trim().slice(0, 12);
+      return { ok: true, rejoin: true, player: ex };
+    }
+    if (this.phase !== 'lobby') return { ok: false, err: '이미 게임이 시작되었습니다. 새 게임을 시작해야 들어올 수 있습니다.' };
+    if (this.players.length >= MAXP) return { ok: false, err: '방이 가득 찼습니다 (최대 ' + MAXP + '명).' };
+    var nm = String(name == null ? '' : name).trim().slice(0, 12) || ('플레이어' + (this.players.length + 1));
+    var taken = {}; this.players.forEach(function (p) { taken[p.name] = 1; });
+    if (taken[nm]) { var k = 2; while (taken[nm + k]) k++; nm = nm + k; }
+    var p = {
+      id: id, name: nm, score: 0, pieces: 2, host: !!isHost, connected: true,
+      cands: [], hidden: null, used: [], picked: false
+    };
+    this.players.push(p);
+    if (!this.hostId) this.hostId = id;
+    if (isHost) this.hostId = id;
+    return { ok: true, player: p };
+  };
+  Game.prototype.setConnected = function (id, on) {
+    var p = this.player(id);
+    if (p) p.connected = !!on;
+  };
+  Game.prototype.kick = function (id) {
+    var p = this.player(id);
+    if (!p) return { ok: false, err: '없는 플레이어입니다.' };
+    if (id === this.hostId) return { ok: false, err: '방장은 내보낼 수 없습니다.' };
+    if (this.phase !== 'lobby' && this.phase !== 'pick') return { ok: false, err: '게임 진행 중에는 내보낼 수 없습니다.' };
+    var idx = this.order.indexOf(id);
+    this.players = this.players.filter(function (x) { return x.id !== id; });
+    if (idx >= 0) {
+      this.order.splice(idx, 1);
+      if (idx < this.turn) this.turn--;
+    }
+    if (this.phase === 'pick') this._advancePick();
+    return { ok: true };
+  };
+
+  /* ---------------- 시작 / 단어 배분 ---------------- */
+  Game.prototype.start = function () {
+    if (this.phase !== 'lobby') return { ok: false, err: '이미 진행 중입니다.' };
+    var ready = this.players.filter(function (p) { return p.connected; });
+    if (ready.length < MINP) return { ok: false, err: MINP + '명 이상이어야 시작할 수 있습니다.' };
+    if (ready.length > MAXP) return { ok: false, err: '최대 ' + MAXP + '명입니다.' };
+    if (ready.length !== this.players.length) {
+      return { ok: false, err: '연결이 끊긴 참가자가 있습니다. 재접속을 기다리거나 내보낸 뒤 시작하세요.' };
+    }
+    this.order = shuffle(this.players.map(function (p) { return p.id; }), (this.seed ^ 0x5bd1e995) >>> 0);
+    this.round = 1; this.turn = 0;
+    this.history = []; this.roundScores = []; this.final = null; this.usedWords = {};
+    this.players.forEach(function (p) {
+      p.score = 0; p.pieces = 2; p.cands = []; p.hidden = null; p.used = []; p.picked = false;
+    });
+    this._deal();
+    this.hints = []; this.hintEnded = false; this.highlight = -1; this.guesses = {}; this.reveal = null;
+    this.phase = 'pick';
+    return { ok: true };
+  };
+  Game.prototype._deal = function () {
+    var rnd = HW.bySeed((this.seed ^ (Date.now() & 0xffffffff)) >>> 0);
+    for (var i = 0; i < this.players.length; i++) {
+      var p = this.players[i];
+      if (p.cands && p.cands.length) continue;
+      var out = [], guard = 0;
+      while (out.length < CAND && guard++ < 800) {
+        var w = HW.randomWord(rnd);
+        if (!w || this.usedWords[w] || out.indexOf(w) >= 0) continue;
+        out.push(w);
+      }
+      for (var k = 0; k < out.length; k++) this.usedWords[out[k]] = 1;
+      p.cands = out;
+    }
+  };
+
+  /* ---------------- 단어 선택 ---------------- */
+  Game.prototype.pick = function (pid, word) {
+    if (this.phase !== 'pick') return { ok: false, err: '지금은 단어를 고를 수 없습니다.' };
+    var p = this.player(pid);
+    if (!p) return { ok: false, err: '플레이어를 찾을 수 없습니다.' };
+    if (p.picked) return { ok: false, err: '이미 확정했습니다.' };
+    var w = String(word == null ? '' : word).trim();
+    if (this.poolFor(p).indexOf(w) < 0) return { ok: false, err: '내 후보 단어가 아닙니다.' };
+    p.hidden = w; p.picked = true;
+    this._advancePick();
+    return { ok: true };
+  };
+  Game.prototype._advancePick = function () {
+    for (var i = 0; i < this.players.length; i++) if (!this.players[i].picked) return;
+    this.turn = 0;
+    this._beginTurn();
+  };
+
+  /* ---------------- 턴 진행 ---------------- */
+  Game.prototype._beginTurn = function () {
+    this.hints = []; this.hintEnded = false; this.highlight = -1;
+    this.guesses = {}; this.reveal = null;
+    this.phase = 'hint';
+  };
+  Game.prototype.hint = function (pid, raw) {
+    if (this.phase !== 'hint') return { ok: false, err: '지금은 힌트를 낼 수 없습니다.' };
+    var h = this.hinter();
+    if (!h || h.id !== pid) return { ok: false, err: '내 출제 차례가 아닙니다.' };
+    if (this.hintEnded) return { ok: false, err: '힌트 제시가 끝났습니다.' };
+    if (this.hints.length >= MAXHINT) return { ok: false, err: '힌트는 최대 ' + MAXHINT + '개입니다.' };
+    var w = String(raw == null ? '' : raw).trim().replace(/\s+/g, '');
+    if (!w) return { ok: false, err: '힌트 단어를 입력하세요.' };
+    if (w.length > 12) return { ok: false, err: '한국어 명사 한 단어(12자 이내)로 입력하세요.' };
+    if (w === h.hidden) return { ok: false, err: '히든 워드와 같은 단어는 힌트가 될 수 없습니다.' };
+    for (var i = 0; i < this.hints.length; i++) if (this.hints[i].word === w) return { ok: false, err: '이미 제시한 힌트입니다.' };
+    var s = HW.sim(h.hidden, w);
+    if (!s || s.ok === false) return { ok: false, err: '유사도를 계산할 수 없는 단어입니다.' };
+    this.hints.push({ word: w, total: s.total });
+    var ended = false;
+    if (s.total > 95) ended = true;
+    if (this.hints.length >= MAXHINT) ended = true;
+    if (ended) this._endHintsNow();
+    return { ok: true, total: s.total, ended: ended, oov: !HW.has(w) };
+  };
+  Game.prototype.endHints = function (pid) {
+    if (this.phase !== 'hint') return { ok: false, err: '지금은 힌트를 끝낼 수 없습니다.' };
+    var h = this.hinter();
+    if (!h || h.id !== pid) return { ok: false, err: '내 출제 차례가 아닙니다.' };
+    if (!this.hints.length) return { ok: false, err: '힌트를 최소 1개는 제시해야 합니다.' };
+    this._endHintsNow();
+    return { ok: true };
+  };
+  Game.prototype._endHintsNow = function () {
+    this.hintEnded = true;
+    var top = 0;
+    for (var i = 1; i < this.hints.length; i++) if (this.hints[i].total > this.hints[top].total) top = i;
+    this.highlight = this.hints.length ? top : -1;
+    this.guesses = {};
+    this.phase = 'guess';
+  };
+
+  /* ---------------- 비밀 답안 ---------------- */
+  Game.prototype.guess = function (pid, words, usePiece) {
+    if (this.phase !== 'guess') return { ok: false, err: '지금은 답안을 낼 수 없습니다.' };
+    var h = this.hinter();
+    if (!h) return { ok: false, err: '진행 정보를 찾을 수 없습니다.' };
+    if (h.id === pid) return { ok: false, err: '출제자는 답안을 낼 수 없습니다.' };
+    if (this.guesses[pid]) return { ok: false, err: '이미 제출했습니다.' };
+    var p = this.player(pid);
+    if (!p) return { ok: false, err: '플레이어를 찾을 수 없습니다.' };
+    var arr = [];
+    (words || []).forEach(function (w) {
+      w = String(w == null ? '' : w).trim().slice(0, 20);
+      if (w && arr.indexOf(w) < 0) arr.push(w);
+    });
+    if (!arr.length) return { ok: false, err: '답안을 입력하세요.' };
+    if (arr.length > 2) arr = arr.slice(0, 2);
+    var piece = false;
+    if (arr.length === 2) {
+      if (p.pieces < 1) return { ok: false, err: '남은 피스가 없습니다. 답안은 1개만 낼 수 있습니다.' };
+      if (usePiece === false) return { ok: false, err: '답안 2개는 피스 1개를 사용합니다.' };
+      p.pieces -= 1; piece = true;
+    }
+    this.guesses[pid] = { words: arr, piece: piece };
+    this._advanceGuess();
+    return { ok: true, piece: piece };
+  };
+  Game.prototype._advanceGuess = function () {
+    if (this.pendingGuess() === 0) this._settle();
+  };
+  Game.prototype._settle = function () {
+    var h = this.hinter();
+    var n = this.hints.length;
+    var stage = stageOf(Math.max(1, n));
+    var mult = this.mult();
+    var pts = baseOf(stage) * mult;
+    var winners = [], answers = [];
+    for (var i = 0; i < this.players.length; i++) {
+      var p = this.players[i];
+      if (p.id === h.id) continue;
+      var g = this.guesses[p.id];
+      var words = g ? g.words.slice() : [];
+      var hit = words.indexOf(h.hidden) >= 0;
+      if (hit) winners.push(p.id);
+      answers.push({ id: p.id, name: p.name, words: words, hit: hit, piece: !!(g && g.piece) });
+    }
+    var hinterPts = 0;
+    if (winners.length) {
+      for (var w = 0; w < winners.length; w++) { var wp = this.player(winners[w]); if (wp) wp.score += pts; }
+    } else {
+      hinterPts = 3 * mult;
+      h.score += hinterPts;
+    }
+    if ((h.used || []).indexOf(h.hidden) < 0) h.used = (h.used || []).concat([h.hidden]);
+    var winnerNames = winners.map(function (id) { return this.nameOf(id); }, this);
+    this.reveal = {
+      round: this.round, turn: this.turn, hinterId: h.id, hinterName: h.name, hidden: h.hidden,
+      stage: stage, stageLabel: stageLabel(stage), points: pts, mult: mult,
+      winners: winners.slice(), winnerNames: winnerNames,
+      hinterPts: hinterPts, allWrong: winners.length === 0,
+      answers: answers, hintCount: n,
+      hints: this.hints.map(function (x) { return { word: x.word, total: x.total }; })
+    };
+    this.history.push({
+      round: this.round, hinterId: h.id, hinter: h.name, hidden: h.hidden, hintCount: n,
+      stage: stage, points: pts, winnerNames: winnerNames.slice(), hinterPts: hinterPts
+    });
+    this.phase = 'reveal';
+  };
+  Game.prototype.forceReveal = function () {
+    if (this.phase !== 'guess') return { ok: false, err: '추리 단계가 아닙니다.' };
+    this._settle();
+    return { ok: true };
+  };
+
+  /* ---------------- 진행(방장) ---------------- */
+  Game.prototype.next = function () {
+    if (this.phase !== 'reveal') return { ok: false, err: '결과 화면에서만 진행할 수 있습니다.' };
+    this.turn++;
+    if (this.turn < this.order.length) { this._beginTurn(); return { ok: true, phase: this.phase }; }
+    this.roundScores.push({
+      round: this.round,
+      rows: this.players.map(function (p) { return { name: p.name, score: p.score, pieces: p.pieces }; })
+    });
+    if (this.round === 1) { this.phase = 'roundEnd'; return { ok: true, phase: this.phase }; }
+    this._finish();
+    return { ok: true, phase: this.phase };
+  };
+  Game.prototype.startRound2 = function () {
+    if (this.phase !== 'roundEnd') return { ok: false, err: '라운드 정리 화면에서만 시작할 수 있습니다.' };
+    this.round = 2; this.turn = 0;
+    for (var i = 0; i < this.players.length; i++) {
+      var p = this.players[i];
+      if (p.hidden && (p.used || []).indexOf(p.hidden) < 0) p.used = (p.used || []).concat([p.hidden]);
+      p.hidden = null; p.picked = false;
+      if (!this.poolFor(p).length) p.cands = [];   // 비정상 상태 방어
+    }
+    this.phase = 'pick';
+    this.hints = []; this.hintEnded = false; this.highlight = -1; this.guesses = {}; this.reveal = null;
+    return { ok: true };
+  };
+  Game.prototype.skipTurn = function () {
+    if (this.phase !== 'hint' && this.phase !== 'guess') return { ok: false, err: '턴 진행 중에만 건너뛸 수 있습니다.' };
+    this.turn++;
+    if (this.turn < this.order.length) { this._beginTurn(); return { ok: true }; }
+    this.roundScores.push({
+      round: this.round,
+      rows: this.players.map(function (p) { return { name: p.name, score: p.score, pieces: p.pieces }; })
+    });
+    if (this.round === 1) this.phase = 'roundEnd'; else this._finish();
+    return { ok: true };
+  };
+  Game.prototype._finish = function () {
+    var rows = this.players.map(function (p) {
+      return { id: p.id, name: p.name, score: p.score, pieces: p.pieces, isHost: !!p.host };
+    });
+    rows.sort(function (a, b) { return b.score - a.score || a.name.localeCompare(b.name); });
+    rows.forEach(function (r, i) { r.rank = i + 1; });
+    this.final = rows;
+    this.phase = 'final';
+  };
+  Game.prototype.rematch = function () {
+    this.phase = 'lobby';
+    this.round = 1; this.turn = 0; this.order = [];
+    this.hints = []; this.hintEnded = false; this.highlight = -1;
+    this.guesses = {}; this.reveal = null; this.history = []; this.roundScores = []; this.final = null;
+    this.usedWords = {};
+    this.players = this.players.filter(function (p) { return p.connected || p.host; });
+    this.players.forEach(function (p) {
+      p.score = 0; p.pieces = 2; p.cands = []; p.hidden = null; p.used = []; p.picked = false;
+    });
+    return { ok: true };
+  };
+
+  /* ---------------- 뷰(플레이어별) ---------------- */
+  Game.prototype.viewFor = function (pid) {
+    var self = this;
+    var me = this.player(pid);
+    var h = this.hinter();
+    var v = {
+      v: 1,
+      code: this.code,
+      phase: this.phase,
+      round: this.round,
+      turn: this.turn,
+      turns: this.order.length,
+      mult: this.mult(),
+      isHost: pid === this.hostId,
+      hostId: this.hostId,
+      meId: pid,
+      me: me ? { id: me.id, name: me.name, score: me.score, pieces: me.pieces } : null,
+      players: this.players.map(function (p) {
+        return {
+          id: p.id, name: p.name, score: p.score, pieces: p.pieces,
+          connected: p.connected, isHost: p.id === self.hostId,
+          picked: p.picked, submitted: !!self.guesses[p.id]
+        };
+      }),
+      ownerId: h ? h.id : null,
+      ownerName: h ? h.name : null,
+      hintWords: this.hints.map(function (x) { return { word: x.word, total: x.total }; }),
+      hintCount: this.hints.length,
+      hintEnded: this.hintEnded,
+      highlight: this.highlight,
+      stage: stageOf(Math.max(1, this.hints.length)),
+      stageLabel: stageLabel(stageOf(Math.max(1, this.hints.length))),
+      stagePoints: [3 * this.mult(), 2 * this.mult(), 1 * this.mult()],
+      pendingPick: this.pendingPick(),
+      pendingGuess: this.pendingGuess(),
+      history: this.history.map(function (e) {
+        return {
+          round: e.round, hinter: e.hinter, hidden: e.hidden, hintCount: e.hintCount,
+          stage: e.stage, points: e.points, winnerNames: e.winnerNames.slice(),
+          hinterPts: e.hinterPts
+        };
+      }),
+      roundLog: clone(this.roundScores),
+      final: clone(this.final)
+    };
+    if (me) {
+      v.myHidden = me.hidden || null;
+      v.myCands = (this.phase === 'pick' ? this.poolFor(me) : (me.cands || [])).slice();
+      v.myUsed = (me.used || []).slice();
+      v.picked = !!me.picked;
+      v.pieces = me.pieces;
+      v.myScore = me.score;
+    }
+    if (this.guesses[pid]) v.myGuess = { words: this.guesses[pid].words.slice(), piece: this.guesses[pid].piece };
+    if (this.phase === 'reveal' && this.reveal) {
+      var r = this.reveal;
+      v.reveal = {
+        hidden: r.hidden, stage: r.stage, stageLabel: r.stageLabel, points: r.points, mult: r.mult,
+        winnerNames: r.winnerNames.slice(), hinterName: r.hinterName, hinterPts: r.hinterPts,
+        allWrong: r.allWrong, hintCount: r.hintCount,
+        answers: r.answers.map(function (a) {
+          return { name: a.name, words: a.words.slice(), hit: a.hit, piece: a.piece, isMe: a.id === pid };
+        }),
+        hints: r.hints.map(function (x) { return { word: x.word, total: x.total }; })
+      };
+    }
+    return v;
+  };
+
+  /* ---------------- 저장/복구 ---------------- */
+  Game.prototype.toJSON = function () {
+    return {
+      seed: this.seed, code: this.code, phase: this.phase, round: this.round, turn: this.turn,
+      order: this.order.slice(), hostId: this.hostId,
+      players: this.players.map(function (p) {
+        return {
+          id: p.id, name: p.name, score: p.score, pieces: p.pieces, host: !!p.host,
+          connected: false, cands: (p.cands || []).slice(), hidden: p.hidden,
+          used: (p.used || []).slice(), picked: !!p.picked
+        };
+      }),
+      hints: this.hints.map(function (x) { return { word: x.word, total: x.total }; }),
+      hintEnded: this.hintEnded, highlight: this.highlight,
+      guesses: clone(this.guesses), reveal: clone(this.reveal), history: clone(this.history),
+      roundScores: clone(this.roundScores), final: clone(this.final), usedWords: clone(this.usedWords)
+    };
+  };
+  Game.from = function (o) {
+    var g = new Game(o.seed);
+    g.code = o.code; g.phase = o.phase; g.round = o.round; g.turn = o.turn;
+    g.order = (o.order || []).slice(); g.hostId = o.hostId;
+    g.players = (o.players || []).map(function (p) {
+      return {
+        id: p.id, name: p.name, score: p.score, pieces: p.pieces, host: !!p.host,
+        connected: !!p.connected, cands: (p.cands || []).slice(), hidden: p.hidden || null,
+        used: (p.used || []).slice(), picked: !!p.picked
+      };
+    });
+    g.hints = (o.hints || []).slice();
+    g.hintEnded = !!o.hintEnded; g.highlight = o.highlight == null ? -1 : o.highlight;
+    g.guesses = o.guesses || {}; g.reveal = o.reveal || null;
+    g.history = o.history || []; g.roundScores = o.roundScores || [];
+    g.final = o.final || null; g.usedWords = o.usedWords || {};
+    return g;
+  };
+
+  global.HWMP_CORE = {
+    Game: Game, MAXP: MAXP, MINP: MINP, MAXHINT: MAXHINT,
+    stageOf: stageOf, stageLabel: stageLabel, genCode: genCode
+  };
+})(typeof window !== 'undefined' ? window : globalThis);
+
+</script>
+<script>
 (function () {
   'use strict';
   var HW = window.HW;
@@ -2009,7 +2545,8 @@ input::placeholder{color:#5a5a70}
     var html;
     if (S.mode === 'guesser') html = viewGuesser();
     else if (S.mode === 'setter') html = viewSetter();
-    else html = viewLab();
+    else if (S.mode === 'lab') html = viewLab();
+    else html = (window.HWMP ? window.HWMP.view() : '');
     $('#view').innerHTML = html;
 
     if (aid) {
@@ -2023,6 +2560,10 @@ input::placeholder{color:#5a5a70}
 
   function renderScore() {
     var sb = $('#scorebar');
+    if (S.mode === 'online' && window.HWMP) {
+      sb.innerHTML = window.HWMP.scorebar();
+      return;
+    }
     if (S.mode === 'lab') {
       var st = HW.stats();
       sb.innerHTML =
@@ -2678,8 +3219,17 @@ input::placeholder{color:#5a5a70}
       '<h3>5. 플레이 모드</h3>' +
       '<ul><li><b>추리자</b> — AI 출제자의 힌트로 후보 5개 중 정답을 맞힙니다.</li>' +
       '<li><b>출제자</b> — 내가 힌트를 내고 AI 플레이어 3명(경렬·동민·존박)을 속입니다.</li>' +
-      '<li><b>테스트랩</b> — 두 단어의 유사도와 지표를 자유롭게 측정합니다.</li></ul>' +
-      '<h3>6. 구현 메모</h3>' +
+      '<li><b>테스트랩</b> — 두 단어의 유사도와 지표를 자유롭게 측정합니다.</li>' +
+      '<li><b>온라인 방</b> — 각자 폰에서 방 코드로 접속해 2~6명이 실시간으로 겨룹니다.</li></ul>' +
+      '<h3>6. 온라인 방 (멀티플레이)</h3>' +
+      '<ul><li>방장이 방을 만들면 <b>HW-0000</b> 형식의 4자리 코드와 초대 링크가 나옵니다. 참가자는 각자 폰에서 링크를 열고 닉네임만 입력하면 들어옵니다.</li>' +
+      '<li><b>2~6명</b> 지원. 2명만 있어도 시작할 수 있어 테스트·소규모 플레이가 가능합니다.</li>' +
+      '<li>준비 단계에서 각자 <b>서로 다른 명사 5개</b>를 받고, 그중 1개를 히든 워드로 비공개 선택합니다(내 화면에만 표시).</li>' +
+      '<li>한 라운드에 <b>전원이 한 번씩 출제자</b>가 됩니다(순서는 추첨). 출제자만 힌트를 입력하고, 유사도는 전원에게 실시간 공개됩니다.</li>' +
+      '<li>힌트가 끝나면 출제자를 제외한 전원이 <b>비밀 답안</b>을 제출하고, 전원 제출 시 동시 공개·자동 정산됩니다. 피스 1개로 답안 1개 추가.</li>' +
+      '<li>승점은 <b>1차 3점 / 2차 2점 / 3차 1점</b>이며, 아무도 못 맞히면 출제자가 3점을 가져갑니다. 2라운드는 남은 단어 4개에서 다시 고르고 <b>모든 승점 2배</b>.</li>' +
+      '<li>연결은 서버 없이 기기끼리 직접(WebRTC/PeerJS) 이루어지며, 새로고침·일시 끊김 시 자동 재접속으로 상태가 복구됩니다.</li></ul>' +
+      '<h3>7. 구현 메모</h3>' +
       '<ul><li>1~3차 승점은 <b>제출 시점에 공개된 힌트 수</b>로 정했습니다(힌트가 적을수록 고득점).</li>' +
       '<li>테스트랩에서 힌트와 후보를 직접 비교하면 정답이 보입니다. 추리자 모드는 스스로 금지하고 즐겨 주세요.</li>' +
       '<li>쉬움 난이도에서는 AI 출제자가 가끔 95% 초과 힌트를 내 실수합니다.</li></ul>' +
@@ -2794,7 +3344,9 @@ input::placeholder{color:#5a5a70}
         break;
       case 'saveSettings': saveSettings(); break;
       case 'testRemote': testRemote(); break;
-      default: break;
+      default:
+        if (window.HWMP && window.HWMP.onAct(act, t)) break;
+        break;
     }
   });
 
@@ -2805,10 +3357,13 @@ input::placeholder{color:#5a5a70}
     if (id === 'hintInput') { e.preventDefault(); addHint(); }
     else if (id === 'la' || id === 'lb') { e.preventDefault(); analyze(); }
     else if (id === 'setterWord') { e.preventDefault(); setterCustom(); }
+    else if (window.HWMP && window.HWMP.onKey(e)) return;
   });
 
   /* ---------------- boot ---------------- */
   function boot() {
+    if (window.HWMP && window.HWMP.init) window.HWMP.init();
+    if (window.HWMP && window.HWMP.wantsOnline()) S.mode = 'online';
     var dl = $('#wordlist');
     if (dl) {
       var words = HW.words();
@@ -2829,6 +3384,1038 @@ input::placeholder{color:#5a5a70}
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
   else boot();
 })();
+
+</script>
+<script>
+/* ==========================================================================
+   mp_ui.js — 히든 워드 "온라인 방" 화면 + P2P 연결(PeerJS)
+   * 게임 규칙/상태는 mp_core.js(호스트 기기)가 담당하고, 이 파일은 화면과
+     메시지 전달만 맡는다. 손님 기기는 자기 뷰(viewFor)만 받는다.
+   * PeerJS를 불러오지 못해도 기존 추리자·출제자·테스트랩 모드는 전혀 영향 없다.
+   * ?mp_local=1 : 같은 브라우저 탭끼리(BroadcastChannel) 연결하는 테스트 모드.
+   ========================================================================== */
+(function (global) {
+  'use strict';
+  var HW = global.HW, Core = global.HWMP_CORE;
+  var MAXP = Core.MAXP, MINP = Core.MINP;
+  var PEER_CDN = [
+    'https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js',
+    'https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js'
+  ];
+
+  var MP = {
+    role: null, status: 'idle', code: '', pid: '', name: '',
+    game: null, view: null, conn: null, conns: {}, peerPid: {},
+    hostPeer: null, guestPeer: null, hostLink: null, guestLink: null,
+    local: false, err: '', everConnected: false,
+    retry: 0, retryTimer: null, pingTimer: null, sig: '',
+    ui: { joinCode: '', nick: '', pick: null, hint: '', g1: '', g2: '' }
+  };
+  var $ = function (s) { return document.querySelector(s); };
+  var peerLoading = null, peerLibFailed = false;
+
+  /* ---------------- utils ---------------- */
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+  function toast(msg) {
+    var t = $('#toast');
+    if (!t) return;
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(toast._t);
+    toast._t = setTimeout(function () { t.classList.remove('show'); }, 2600);
+  }
+  function qs(name) {
+    var m = new RegExp('[?&]' + name + '=([^&#]*)').exec(location.search || '');
+    return m ? decodeURIComponent(m[1]) : '';
+  }
+  function sGet(k) { try { return global.sessionStorage.getItem(k) || ''; } catch (e) { return ''; } }
+  function sSet(k, v) { try { global.sessionStorage.setItem(k, v); } catch (e) {} }
+  function sDel(k) { try { global.sessionStorage.removeItem(k); } catch (e) {} }
+  function isLocal() { return qs('mp_local') === '1'; }
+
+  function getPid() {
+    var pid = sGet('hw_mp_pid');
+    if (!pid) {
+      pid = 'p' + Math.random().toString(36).slice(2, 9) + Date.now().toString(36).slice(-3);
+      sSet('hw_mp_pid', pid);
+    }
+    return pid;
+  }
+  var PID = getPid();
+
+  function peerIdFor(code) { return 'hwmp5-' + code; }
+  function inviteURL() { return location.origin + location.pathname + '?room=' + MP.code; }
+  function pts2(n) { return n + '점'; }
+  function pipsHTML(n) {
+    var out = '';
+    for (var i = 0; i < 2; i++) out += '<span class="piece' + (i < n ? ' on' : '') + '"></span>';
+    return '<span class="pieces">' + out + '</span>';
+  }
+  function render() { if (global.HWApp && global.HWApp.render) global.HWApp.render(); }
+
+  /* ---------------- PeerJS lazy load ---------------- */
+  function loadPeer() {
+    if (global.Peer) return Promise.resolve(global.Peer);
+    if (peerLoading) return peerLoading;
+    peerLoading = new Promise(function (resolve, reject) {
+      var i = 0;
+      function next() {
+        if (i >= PEER_CDN.length) { peerLibFailed = true; reject(new Error('peerjs load failed')); return; }
+        var url = PEER_CDN[i++];
+        var s = document.createElement('script');
+        var done = false;
+        var to = setTimeout(function () { if (!done) { done = true; s.remove(); next(); } }, 9000);
+        s.src = url; s.async = true;
+        s.onload = function () {
+          if (done) return;
+          clearTimeout(to);
+          if (global.Peer) { done = true; resolve(global.Peer); }
+          else { done = true; next(); }
+        };
+        s.onerror = function () { if (done) return; done = true; clearTimeout(to); s.remove(); next(); };
+        document.head.appendChild(s);
+      }
+      next();
+    });
+    peerLoading.catch(function () { peerLoading = null; });
+    return peerLoading;
+  }
+  function peerErrText(e) {
+    var t = (e && e.type) || 'error';
+    if (t === 'network' || t === 'server-error' || t === 'socket-error') return 'PeerJS 중계 서버에 연결할 수 없습니다. 인터넷 연결을 확인한 뒤 다시 시도해 주세요.';
+    if (t === 'unavailable-id') return '같은 방 코드가 이미 사용 중입니다. 다시 시도해 주세요.';
+    if (t === 'browser-incompatible') return '이 브라우저는 WebRTC를 지원하지 않습니다. 최신 Safari/Chrome에서 열어 주세요.';
+    return '연결 오류(' + t + '). 잠시 후 다시 시도해 주세요.';
+  }
+
+  /* ---------------- local (테스트 전용) 링크 ---------------- */
+  function LocalHost(code, onMsg) {
+    var inbox = new BroadcastChannel('hwmp-' + code);
+    var outbox = new BroadcastChannel('hwmp-' + code + '-out');
+    inbox.onmessage = function (e) {
+      var d = e.data;
+      if (d && d.k === 'to-host') onMsg({ peer: d.pid, send: function (m) { outbox.postMessage({ k: 'to-guest', to: d.pid, m: m }); } }, d.m);
+    };
+    return { close: function () { inbox.close(); outbox.close(); } };
+  }
+  function LocalGuest(code, pid, onOpen, onMsg, onLost) {
+    var inbox = new BroadcastChannel('hwmp-' + code + '-out');
+    var outbox = new BroadcastChannel('hwmp-' + code);
+    inbox.onmessage = function (e) {
+      var d = e.data;
+      if (d && d.k === 'to-guest' && (d.to === pid || d.to === '*')) onMsg(d.m);
+    };
+    setTimeout(onOpen, 20);
+    // 방장이 새로고침해도 다시 붙도록 주기적으로 join을 다시 보낸다(테스트 모드 전용).
+    var ka = setInterval(function () {
+      outbox.postMessage({ k: 'to-host', pid: pid, m: { t: 'join', pid: pid, name: MP.name } });
+    }, 4000);
+    return {
+      open: true,
+      send: function (m) { outbox.postMessage({ k: 'to-host', pid: pid, m: m }); },
+      close: function () { clearInterval(ka); inbox.close(); outbox.close(); }
+    };
+  }
+
+  /* ---------------- host ---------------- */
+  function startHostTransport(code, onReady, onFail) {
+    if (MP.local) {
+      MP.hostLink = LocalHost(code, onGuestData);
+      onReady();
+      return;
+    }
+    loadPeer().then(function (Peer) {
+      var tries = 0;
+      function attempt() {
+        var peer;
+        try { peer = new Peer(peerIdFor(code), { debug: 0 }); }
+        catch (e) { onFail('연결을 시작할 수 없습니다.'); return; }
+        MP.hostPeer = peer;
+        var opened = false;
+        peer.on('open', function () { opened = true; onReady(); });
+        peer.on('connection', function (conn) {
+          conn.on('data', function (d) { onGuestData(conn, d); });
+          conn.on('close', function () { dropConn(conn); });
+          conn.on('error', function () {});
+        });
+        peer.on('disconnected', function () { try { peer.reconnect(); } catch (e) {} });
+        peer.on('error', function (e) {
+          var t = e && e.type;
+          if (t === 'unavailable-id' && tries < 3) {
+            tries++;
+            try { peer.destroy(); } catch (x) {}
+            code = Core.genCode();
+            MP.code = code;
+            if (MP.game) MP.game.code = code;
+            setTimeout(attempt, 400);
+            return;
+          }
+          if (!opened) onFail(peerErrText(e));
+          else if (t === 'network' || t === 'server-error') {
+            MP.status = 'reconnecting';
+            render();
+            setTimeout(function () { try { peer.reconnect(); } catch (x) {} }, 2500);
+          }
+        });
+      }
+      attempt();
+    }).catch(function () {
+      onFail('온라인 연결 라이브러리를 불러오지 못했습니다(인터넷 연결 확인). 오프라인 모드인 추리자·출제자·테스트랩은 그대로 사용할 수 있습니다.');
+    });
+  }
+
+  function dropConn(conn) {
+    var pid = null;
+    for (var k in MP.peerPid) if (MP.peerPid[k] === conn.peer) { pid = MP.peerPid[k]; delete MP.peerPid[k]; }
+    if (pid) {
+      if (MP.conns[pid] === conn) delete MP.conns[pid];
+      if (MP.game) MP.game.setConnected(pid, false);
+    }
+    if (MP.game) push();
+  }
+
+  function onGuestData(conn, d) {
+    if (MP.role !== 'host' || !MP.game || !d || typeof d !== 'object') return;
+    if (d.t === 'join') {
+      var pid = String(d.pid || '').slice(0, 48);
+      if (!pid) return;
+      var prev = MP.game.player(pid);
+      var wasOff = !!(prev && !prev.connected);
+      var r = MP.game.addPlayer(pid, d.name, false);
+      if (!r.ok) {
+        try { conn.send({ t: 'err', m: r.err }); } catch (e) {}
+        return;
+      }
+      MP.peerPid[conn.peer] = pid;
+      MP.conns[pid] = conn;
+      if (wasOff) {
+        try { conn.send({ t: 'info', m: '다시 연결되었습니다. 진행 상황을 복구합니다.' }); } catch (e) {}
+      }
+      push();
+      return;
+    }
+    var gp = MP.peerPid[conn.peer];
+    if (!gp) return;
+    if (d.t === 'ping') { try { conn.send({ t: 'pong' }); } catch (e) {} return; }
+    if (d.t === 'bye') {
+      MP.game.setConnected(gp, false);
+      delete MP.conns[gp];
+      push();
+      return;
+    }
+    if (d.t === 'act') hostAct(gp, d);
+  }
+
+  function hostAct(pid, d) {
+    var g = MP.game;
+    if (!g) return;
+    var r = { ok: false, err: '알 수 없는 요청입니다.' };
+    if (d.a === 'pick') r = g.pick(pid, d.word);
+    else if (d.a === 'hint') r = g.hint(pid, d.word);
+    else if (d.a === 'endHints') r = g.endHints(pid);
+    else if (d.a === 'guess') r = g.guess(pid, d.words, d.piece);
+    else if (d.a === 'sync') r = { ok: true };
+    else if (d.a === 'next' && pid === g.hostId) r = g.next();
+    else if (d.a === 'round2' && pid === g.hostId) r = g.startRound2();
+    else if (d.a === 'start' && pid === g.hostId) r = g.start();
+    else if (d.a === 'rematch' && pid === g.hostId) r = g.rematch();
+    else if (d.a === 'skip' && pid === g.hostId) r = g.skipTurn();
+    else if (d.a === 'reveal' && pid === g.hostId) r = g.forceReveal();
+    else if (d.a === 'kick' && pid === g.hostId) {
+      r = g.kick(d.pid);
+      if (r.ok) {
+        var c = MP.conns[d.pid];
+        if (c) { try { c.send({ t: 'err', m: '방장이 내보냈습니다.' }); c.close(); } catch (e) {} }
+        delete MP.conns[d.pid];
+      }
+    }
+    if (!r.ok) {
+      if (pid === MP.pid) toast(r.err);
+      else { var conn = MP.conns[pid]; if (conn) { try { conn.send({ t: 'err', m: r.err }); } catch (e) {} } }
+    } else {
+      if (r.ended && r.total > 95 && pid !== MP.pid) {
+        var cc = MP.conns[pid];
+        if (cc) { try { cc.send({ t: 'toast', m: '95% 초과 — 힌트 제시가 즉시 종료됩니다.' }); } catch (e) {} }
+      }
+      if (r.ended && r.total > 95 && pid === MP.pid) toast('95% 초과 — 힌트 제시가 즉시 종료됩니다.');
+      if (d.a === 'start' && r.ok) MP.sig = '';
+    }
+    push();
+  }
+
+  function push() {
+    if (MP.role === 'host' && MP.game) {
+      MP.view = MP.game.viewFor(MP.pid);
+      var g = MP.game;
+      for (var i = 0; i < g.players.length; i++) {
+        var p = g.players[i];
+        if (p.id === MP.pid) continue;
+        var c = MP.conns[p.id];
+        if (c) { try { c.send({ t: 'view', v: g.viewFor(p.id) }); } catch (e) {} }
+      }
+      saveSnap();
+    }
+    render();
+  }
+  function saveSnap() {
+    if (MP.role !== 'host' || !MP.game) return;
+    try { sSet('hw_mp_game_' + MP.code, JSON.stringify(MP.game.toJSON())); } catch (e) {}
+  }
+  function sendTo(pid, msg) {
+    if (pid === MP.pid) { if (msg.t === 'err') toast(msg.m); return; }
+    var c = MP.conns[pid];
+    if (c) { try { c.send(msg); } catch (e) {} }
+  }
+
+  /* ---------------- guest ---------------- */
+  function connectGuest(first) {
+    if (MP.local) {
+      MP.guestLink = MP.conn = LocalGuest(MP.code, MP.pid, function () {
+        MP.status = 'connected'; MP.everConnected = true; MP.retry = 0;
+        sSet('hw_mp_sess', JSON.stringify({ role: 'guest', code: MP.code, name: MP.name }));
+        MP.guestLink.send({ t: 'join', pid: MP.pid, name: MP.name });
+        render();
+      }, onHostData, onGuestLost);
+      return;
+    }
+    loadPeer().then(function (Peer) {
+      var peer;
+      try { peer = new Peer(null, { debug: 0 }); } catch (e) { MP.status = 'error'; MP.err = '연결을 시작할 수 없습니다.'; render(); return; }
+      MP.guestPeer = peer;
+      peer.on('open', function () {
+        var conn;
+        try { conn = peer.connect(peerIdFor(MP.code), { reliable: true }); } catch (e) { onGuestLost(); return; }
+        MP.conn = conn;
+        conn.on('open', function () {
+          MP.status = 'connected'; MP.everConnected = true; MP.retry = 0;
+          clearTimeout(MP.retryTimer); MP.retryTimer = null;
+          sSet('hw_mp_sess', JSON.stringify({ role: 'guest', code: MP.code, name: MP.name }));
+          try { conn.send({ t: 'join', pid: MP.pid, name: MP.name }); } catch (e) {}
+          startPing();
+          render();
+        });
+        conn.on('data', onHostData);
+        conn.on('close', function () { onGuestLost(); });
+        conn.on('error', function () { onGuestLost(); });
+      });
+      peer.on('error', function (e) {
+        var t = e && e.type;
+        if (t === 'peer-unavailable') {
+          if (!MP.everConnected) {
+            MP.status = 'error';
+            MP.err = '방 코드 ' + MP.code + '의 방을 찾을 수 없습니다. 코드를 확인하거나 방장이 방을 열었는지 확인해 주세요.';
+            render();
+            return;
+          }
+          onGuestLost();
+        } else if (t === 'network' || t === 'server-error' || t === 'socket-error' || t === 'socket-closed') {
+          onGuestLost();
+        } else if (!MP.everConnected) {
+          MP.status = 'error'; MP.err = peerErrText(e); render();
+        }
+      });
+    }).catch(function () {
+      MP.status = 'error';
+      MP.err = '온라인 연결 라이브러리를 불러오지 못했습니다(인터넷 연결 확인).';
+      render();
+    });
+  }
+
+  function onGuestLost() {
+    if (MP.role !== 'guest') return;
+    if (MP.status === 'connected' || MP.status === 'connecting') {
+      MP.status = 'reconnecting';
+      render();
+    }
+    if (!MP.retryTimer) scheduleRetry();
+  }
+  function scheduleRetry() {
+    MP.retry++;
+    if (MP.retry > 40) {
+      MP.status = 'error';
+      MP.err = '연결이 끊긴 채로 오래되었습니다. 방 코드 ' + MP.code + '로 다시 입장해 주세요.';
+      render();
+      return;
+    }
+    var wait = Math.min(1500 + MP.retry * 400, 7000);
+    MP.retryTimer = setTimeout(function () {
+      MP.retryTimer = null;
+      if (MP.role !== 'guest' || MP.status === 'connected' || MP.status === 'error') return;
+      try { if (MP.guestPeer) MP.guestPeer.destroy(); } catch (e) {}
+      MP.guestPeer = null;
+      connectGuest(false);
+    }, wait);
+  }
+  function startPing() {
+    clearInterval(MP.pingTimer);
+    MP.pingTimer = setInterval(function () {
+      if (MP.conn && MP.conn.open !== false) { try { MP.conn.send({ t: 'ping' }); } catch (e) {} }
+    }, 20000);
+  }
+  function onHostData(d) {
+    if (!d || typeof d !== 'object') return;
+    if (d.t === 'view') {
+      MP.view = d.v;
+      MP.everConnected = true;
+      if (MP.status !== 'connected') {
+        MP.status = 'connected'; MP.retry = 0;
+        clearTimeout(MP.retryTimer); MP.retryTimer = null;
+      }
+      render();
+      return;
+    }
+    if (d.t === 'err') { toast(d.m || '요청을 처리할 수 없습니다.'); return; }
+    if (d.t === 'info') { toast(d.m); return; }
+    if (d.t === 'toast') { toast(d.m); return; }
+  }
+
+  /* ---------------- 방 만들기 / 들어가기 / 나가기 ---------------- */
+  function createRoom(name) {
+    name = String(name || '').trim().slice(0, 12);
+    if (!name) { toast('닉네임을 입력하세요.'); return; }
+    leaveRoom(true);
+    MP.name = name; MP.ui.nick = name;
+    MP.local = isLocal();
+    MP.role = 'host';
+    MP.status = 'connecting';
+    MP.err = '';
+    MP.code = Core.genCode();
+    MP.everConnected = false;
+    var g = new Core.Game((Date.now() ^ (Math.random() * 0x7fffffff)) >>> 0);
+    g.code = MP.code;
+    g.addPlayer(MP.pid, name, true);
+    MP.game = g;
+    MP.sig = '';
+    render();
+    startHostTransport(MP.code, function () {
+      MP.status = 'connected';
+      sSet('hw_mp_sess', JSON.stringify({ role: 'host', code: MP.code, name: name }));
+      push();
+    }, function (msg) {
+      MP.status = 'error'; MP.err = msg; render();
+    });
+  }
+
+  function joinRoom(code, name) {
+    code = String(code || '').replace(/[^0-9]/g, '').slice(0, 4);
+    name = String(name || '').trim().slice(0, 12);
+    if (code.length !== 4) { toast('4자리 방 코드를 입력하세요.'); return; }
+    if (!name) { toast('닉네임을 입력하세요.'); return; }
+    leaveRoom(true);
+    MP.local = isLocal();
+    MP.role = 'guest';
+    MP.code = code;
+    MP.name = name;
+    MP.ui.nick = name;
+    MP.err = '';
+    MP.status = 'connecting';
+    MP.everConnected = false;
+    MP.view = null;
+    MP.retry = 0;
+    MP.sig = '';
+    sSet('hw_mp_sess', JSON.stringify({ role: 'guest', code: code, name: name }));
+    render();
+    connectGuest(true);
+  }
+
+  function leaveRoom(silent) {
+    clearTimeout(MP.retryTimer); MP.retryTimer = null;
+    clearInterval(MP.pingTimer); MP.pingTimer = null;
+    if (MP.role === 'guest' && MP.conn && MP.conn.open !== false) { try { MP.conn.send({ t: 'bye' }); } catch (e) {} }
+    try { if (MP.guestPeer) MP.guestPeer.destroy(); } catch (e) {}
+    try { if (MP.hostPeer) MP.hostPeer.destroy(); } catch (e) {}
+    try { if (MP.hostLink) MP.hostLink.close(); } catch (e) {}
+    try { if (MP.guestLink) MP.guestLink.close(); } catch (e) {}
+    MP.guestPeer = null; MP.hostPeer = null; MP.conn = null; MP.conns = {}; MP.peerPid = {};
+    MP.hostLink = null; MP.guestLink = null;
+    if (MP.code) sDel('hw_mp_game_' + MP.code);
+    sDel('hw_mp_sess');
+    var wasRole = MP.role;
+    MP.role = null; MP.status = 'idle'; MP.game = null; MP.view = null; MP.err = '';
+    MP.code = ''; MP.sig = '';
+    MP.ui.pick = null; MP.ui.hint = ''; MP.ui.g1 = ''; MP.ui.g2 = '';
+    if (!silent && wasRole) { MP.ui.joinCode = ''; render(); toast('방에서 나왔습니다.'); }
+  }
+
+  function act(a, extra) {
+    if (MP.role === 'host') {
+      var d = { t: 'act', a: a };
+      for (var k in (extra || {})) d[k] = extra[k];
+      hostAct(MP.pid, d);
+      return;
+    }
+    if (MP.role === 'guest' && MP.conn && MP.conn.open !== false) {
+      var m = { t: 'act', a: a };
+      for (var k2 in (extra || {})) m[k2] = extra[k2];
+      try { MP.conn.send(m); } catch (e) { toast('전송 실패 — 연결을 확인하세요.'); }
+      return;
+    }
+    toast('방장과 연결되어 있지 않습니다.');
+  }
+
+  /* ---------------- 입력 상태 보존 ---------------- */
+  function captureInputs() {
+    var e;
+    if ((e = $('#mpNick'))) MP.ui.nick = e.value;
+    if ((e = $('#mpCode'))) MP.ui.joinCode = e.value.replace(/[^0-9]/g, '').slice(0, 4);
+    if ((e = $('#mpHint'))) MP.ui.hint = e.value;
+    if ((e = $('#mpG1'))) MP.ui.g1 = e.value;
+    if ((e = $('#mpG2'))) MP.ui.g2 = e.value;
+  }
+  function syncPhase(v) {
+    var sig = v ? [v.code, v.phase, v.round, v.turn, v.ownerId].join('|') : '';
+    if (sig !== MP.sig) {
+      MP.sig = sig;
+      MP.ui.pick = null; MP.ui.hint = ''; MP.ui.g1 = ''; MP.ui.g2 = '';
+    }
+  }
+
+  /* ---------------- 화면 ---------------- */
+  function menuView() {
+    var st = '';
+    if (MP.err) st = '<div class="note warn">' + esc(MP.err) + '</div>' +
+      '<div class="row grow" style="margin-top:10px"><button class="btn ghost" data-act="mpRetry">다시 시도</button></div>';
+    else if (MP.status === 'connecting') st = '<p class="note">연결 중…</p>';
+
+    var code = MP.ui.joinCode || qs('room');
+    return '<div class="card">' +
+      '<div class="card-head"><div class="card-title"><span class="dot"></span>온라인 방 · 각자 폰으로</div>' +
+      '<span class="badge cyan">P2P</span></div>' +
+      '<p class="lead">방장이 방을 만들면 4자리 코드가 나옵니다. 친구들이 각자 폰에서 같은 주소로 접속해 <b>방 코드만 입력하면</b> 바로 연결됩니다. ' +
+      '2~6명이 2라운드로 겨루고, 서버 없이 기기끼리 직접 연결합니다(인터넷 필요).</p>' +
+      '<div class="field"><label>닉네임</label><input id="mpNick" type="text" maxlength="12" autocomplete="off" placeholder="예: 상현" value="' + esc(MP.ui.nick) + '"></div>' +
+      '<button class="btn primary wide" data-act="mpCreate" style="margin-top:10px">방 만들기</button>' +
+      '<div class="divider"></div>' +
+      '<div class="inline">' +
+      '<div class="field" style="flex:0 0 118px"><label>방 코드</label><input id="mpCode" type="text" inputmode="numeric" maxlength="4" autocomplete="off" placeholder="4829" value="' + esc(code) + '"></div>' +
+      '<button class="btn cyan" data-act="mpJoin" style="flex:1 1 auto">방 들어가기</button>' +
+      '</div>' +
+      st +
+      '</div>' +
+      '<div class="card"><div class="card-head"><div class="card-title"><span class="dot"></span>온라인 방 규칙</div></div>' +
+      '<div class="kv">' +
+      '<b>인원</b><span>2~6명 (5명 기준 설계, 2명부터 시작 가능)</span>' +
+      '<b>준비</b><span>각자 명사 5개 중 1개를 히든 워드로 비공개 선택</span>' +
+      '<b>턴</b><span>한 라운드에 전원이 한 번씩 출제자</span>' +
+      '<b>힌트</b><span>최대 10개 · 유사도 공개 · 95% 초과 시 즉시 종료</span>' +
+      '<b>추리</b><span>비밀 답안 동시 공개 · 피스 1개로 답안 2개</span>' +
+      '<b>승점</b><span>1차 3점 / 2차 2점 / 3차 1점, 전원 오답 시 출제자 3점</span>' +
+      '<b>2라운드</b><span>남은 단어 4개에서 다시 선택 · 모든 승점 ×2</span>' +
+      '</div>' +
+      '<p class="note">방장 기기가 진행을 담당합니다. 방장이 화면을 닫으면 진행이 멈추고, 같은 기기에서 주소를 다시 열면 이어서 복구됩니다. 참가자는 새로고침해도 자동으로 다시 들어갑니다.</p>' +
+      '</div>';
+  }
+
+  function statusBanner() {
+    if (MP.role === 'host' && MP.status === 'reconnecting') {
+      return '<div class="note warn">중계 서버 연결이 끊겼습니다. 자동으로 다시 연결하는 중입니다. 참가자들도 잠시 후 자동 재접속합니다.</div>';
+    }
+    if (MP.role === 'guest' && MP.status === 'reconnecting') {
+      return '<div class="note warn">연결이 끊겨 다시 연결하는 중입니다… (시도 ' + MP.retry + ') 화면을 닫지 마세요.</div>';
+    }
+    if (MP.status === 'connecting') return '<div class="note">연결 중…</div>';
+    if (MP.err) return '<div class="note warn">' + esc(MP.err) + '<div class="row" style="margin-top:8px"><button class="btn ghost" data-act="mpLeave">나가기</button><button class="btn ghost" data-act="mpRetry">다시 시도</button></div></div>';
+    return '';
+  }
+
+  function roomHeader() {
+    var v = MP.view;
+    var n = v && v.players ? v.players.length : 1;
+    return '<div class="card tight mp-roomhead">' +
+      '<div><div class="mp-codewrap"><span class="mp-code-label">ROOM</span><b class="mp-code">HW-' + esc(MP.code || (v ? v.code : '')) + '</b></div>' +
+      '<div class="mp-codesub">' + (MP.role === 'host' ? '내가 만든 방' : '참가한 방') + ' · ' + n + '/' + MAXP + '명 · ' +
+      (MP.role === 'host' ? '<span class="' + (MP.status === 'connected' ? 'okdot' : 'noodot') + '"></span>' + (MP.status === 'connected' ? '방 열림' : '연결 중') : '<span class="' + (MP.status === 'connected' ? 'okdot' : 'noodot') + '"></span>' + (MP.status === 'connected' ? '연결됨' : '재연결 중')) +
+      '</div></div>' +
+      '<div class="row" style="gap:6px;flex-wrap:nowrap">' +
+      '<button class="btn ghost" data-act="mpCopy">초대 링크</button>' +
+      '<button class="btn ghost" data-act="mpLeave">나가기</button>' +
+      '</div></div>';
+  }
+
+  function playersCard(v) {
+    if (!v || !v.players) return '';
+    var rows = v.players.map(function (p) {
+      var me = p.id === MP.pid;
+      var mark = '';
+      if (v.phase === 'pick') mark = p.picked ? '<span class="mp-mini ok">확정</span>' : '<span class="mp-mini">선택 중</span>';
+      else if (v.phase === 'guess') mark = p.submitted ? '<span class="mp-mini ok">제출</span>' : '<span class="mp-mini">생각 중</span>';
+      else if (v.phase === 'hint' && p.id === v.ownerId) mark = '<span class="mp-mini gold">출제자</span>';
+      return '<div class="mp-p' + (me ? ' me' : '') + (p.connected ? '' : ' off') + '">' +
+        '<span class="live' + (p.connected ? ' on' : '') + '"></span>' +
+        '<span class="nm">' + esc(p.name) + (me ? ' <i>나</i>' : '') + (p.isHost ? ' <b class="hostmark">방장</b>' : '') + '</span>' +
+        mark +
+        '<span class="sc">' + p.score + '점</span>' +
+        pipsHTML(p.pieces) +
+        (v.isHost && MP.role === 'host' && !p.connected && (v.phase === 'lobby' || v.phase === 'pick') && !p.isHost
+          ? '<button class="mp-kick" data-act="mpKick" data-pid="' + esc(p.id) + '">내보내기</button>' : '') +
+        '</div>';
+    }).join('');
+    return '<div class="card tight"><div class="card-head"><div class="card-title"><span class="dot"></span>플레이어</div>' +
+      '<span class="badge">' + v.players.length + '/' + MAXP + '</span></div>' +
+      '<div class="mp-players">' + rows + '</div></div>';
+  }
+
+  function lobbyBody(v) {
+    var hostRow = '';
+    if (v.isHost) {
+      var can = v.players.length >= MINP;
+      hostRow = '<button class="btn primary wide" data-act="mpStart"' + (can ? '' : ' disabled') + ' style="margin-top:12px">' +
+        (can ? ('게임 시작 (' + v.players.length + '명)') : MINP + '명 이상이면 시작할 수 있습니다') + '</button>' +
+        '<p class="note">2명만 있어도 테스트·소규모 플레이가 가능하고, 5명이면 방송과 같은 구성입니다. 시작 전까지 참가자는 자유롭게 들어오고 나갈 수 있습니다.</p>';
+    } else {
+      hostRow = '<p class="note gold">방장이 시작하기를 기다리는 중입니다. 방 코드를 친구들에게 공유해 보세요.</p>';
+    }
+    return '<div class="card">' +
+      '<div class="card-head"><div class="card-title"><span class="dot"></span>대기실</div><span class="badge gold">시작 전</span></div>' +
+      '<p class="lead">초대 링크를 공유하면 친구가 방 코드를 입력할 필요 없이 바로 입장 화면이 열립니다.</p>' +
+      '<div class="mp-invite"><code>' + esc(inviteURL()) + '</code></div>' +
+      hostRow +
+      '</div>';
+  }
+
+  function pickBody(v) {
+    var pool = v.myCands || [];
+    var sel = (MP.ui.pick && pool.indexOf(MP.ui.pick) >= 0) ? MP.ui.pick : (v.myHidden || null);
+    var chips = pool.map(function (w, i) {
+      var on = sel === w;
+      return '<button class="chip' + (on ? ' sel' : '') + '" data-act="mpPickWord" data-word="' + esc(w) + '">' +
+        '<span class="tag">' + String.fromCharCode(65 + i) + '</span>' +
+        (on ? '<span class="pick">✓</span>' : '') +
+        '<div class="w">' + esc(w) + '</div></button>';
+    }).join('');
+    var done = v.players.filter(function (p) { return p.picked; }).length;
+    return '<div class="card">' +
+      '<div class="card-head"><div class="card-title"><span class="dot"></span>' + (v.round === 2 ? '2라운드 · 남은 단어에서 선택' : '히든 워드 정하기') + '</div>' +
+      '<span class="badge gold">라운드 ' + v.round + '</span></div>' +
+      '<p class="lead">내 후보 <b>' + pool.length + '개</b> 중 하나를 히든 워드로 정합니다. 이 단어는 <b>내 화면에만</b> 보이고 다른 플레이어에게는 공개되지 않습니다.</p>' +
+      '<div class="cands">' + chips + '</div>' +
+      (v.picked
+        ? '<p class="note gold">확정: <b>' + esc(v.myHidden) + '</b> — 다른 플레이어를 기다리는 중 (' + done + '/' + v.players.length + ')</p>'
+        : '<button class="btn primary wide" data-act="mpPickConfirm"' + (sel ? '' : ' disabled') + ' style="margin-top:12px">' +
+          (sel ? '“' + esc(sel) + '” 로 확정' : '단어를 하나 선택하세요') + '</button>') +
+      '</div>';
+  }
+
+  function hintRows(v) {
+    if (!v.hintWords.length) return '<div class="hint-empty">아직 힌트가 없습니다.</div>';
+    var top = 0;
+    for (var i = 1; i < v.hintWords.length; i++) if (v.hintWords[i].total > v.hintWords[top].total) top = i;
+    return '<div class="hints">' + v.hintWords.map(function (h, i) {
+      var isTop = (v.hintEnded || v.phase === 'guess') && i === top;
+      var color = h.total > 95 ? '#ff7d90' : (h.total >= 85 ? '#f3d27c' : (h.total >= 65 ? '#9becf6' : (h.total >= 40 ? '#b9c9d6' : '#8a8aa0')));
+      var bg = h.total > 95 ? 'linear-gradient(90deg,#ff8a9d,#ff5470)' : (h.total >= 70 ? 'linear-gradient(90deg,#4fd8e8,#e2b74e)' : (h.total >= 40 ? 'linear-gradient(90deg,#3aa8c9,#4fd8e8)' : 'linear-gradient(90deg,#3a3a4d,#5a5a72)'));
+      return '<div class="hint' + (isTop ? ' top' : '') + '">' +
+        '<div class="no">' + (i + 1) + '</div><div class="body">' +
+        '<div class="wline"><span class="w">' + esc(h.word) + '</span><span class="s" style="color:' + color + '">' + h.total + '%</span></div>' +
+        '<div class="bar"><i style="width:' + h.total + '%;background:' + bg + '"></i></div>' +
+        (isTop ? '<div class="tophint">가장 유사한 힌트 · 강조 공개</div>' : '') +
+        '</div></div>';
+    }).join('') + '</div>';
+  }
+
+  function stageBar(st) {
+    return '<div class="stagebar">' + [1, 2, 3].map(function (k) {
+      return '<div class="stage' + (st === k ? ' on' : '') + '">' + k + '차 · ' + (k === 1 ? '3' : k === 2 ? '2' : '1') + '점' + '</div>';
+    }).join('') + '</div>';
+  }
+
+  function turnInfo(v) {
+    if (!v.ownerName) return '';
+    return '<div class="mp-turn"><b>' + esc(v.ownerName) + '</b> 님이 출제자 · 턴 ' + Math.min(v.turn + 1, v.turns) + '/' + v.turns +
+      (v.mult === 2 ? ' <span class="badge gold">배점 ×2</span>' : '') + '</div>';
+  }
+
+  function hintBody(v) {
+    var out = '<div class="card">' +
+      '<div class="card-head"><div class="card-title"><span class="dot"></span>힌트 · 유사도</div>' +
+      '<span class="badge ' + (v.hintCount ? 'gold' : '') + '">' + v.hintCount + ' / 10</span></div>' +
+      stageBar(Core.stageOf(Math.max(1, v.hintCount))) +
+      hintRows(v) +
+      '<p class="note">힌트마다 AI 유사도가 전원에게 공개됩니다. <b>95% 초과</b> 힌트가 나오면 즉시 제시가 끝나고, 10개를 다 쓰면 가장 유사한 힌트가 강조 공개됩니다.</p>' +
+      '</div>';
+
+    if (v.ownerId === MP.pid) {
+      out += '<div class="card">' +
+        '<div class="card-head"><div class="card-title"><span class="dot"></span>내 히든 워드</div>' +
+        '<span class="badge gold">' + esc(v.myHidden || '') + '</span></div>' +
+        '<p class="lead">이 단어를 숨기되, 유사도를 활용해 추리자들이 맞출 수 있게 힌트를 내세요. 힌트는 한국어 명사 하나씩.</p>' +
+        '<div class="inline">' +
+        '<div class="field"><label>힌트 단어</label><input id="mpHint" type="text" list="wordlist" autocomplete="off" placeholder="예: 항구" value="' + esc(MP.ui.hint) + '"></div>' +
+        '<button class="btn primary" data-act="mpHintSend">힌트 제시</button>' +
+        '</div>' +
+        '<div class="row grow" style="margin-top:8px">' +
+        '<button class="btn ghost" data-act="mpHintEnd"' + (v.hintCount ? '' : ' disabled') + '>힌트 종료하고 추리 받기</button>' +
+        '</div>' +
+        '<p class="note">1차(1~3개) 3점 · 2차(4~7개) 2점 · 3차(8~10개) 1점. 힌트를 적게 쓸수록 추리자가 더 많은 점수를 가져갑니다.' + (v.mult === 2 ? ' 2라운드는 2배.' : '') + '</p>' +
+        '</div>';
+    } else {
+      out += '<div class="card">' +
+        '<div class="card-head"><div class="card-title"><span class="dot"></span>추리 준비</div><span class="badge">대기</span></div>' +
+        '<p class="lead"><b>' + esc(v.ownerName) + '</b> 님이 힌트를 내고 있습니다. 힌트가 끝나면 <b>비밀 답안</b>을 제출합니다. 다른 사람의 답안은 공개 전까지 보이지 않습니다.</p>' +
+        (v.myCands && v.myCands.length
+          ? '<div class="mp-mine"><span class="mp-mini">내 단어(비공개)</span><div class="row" style="gap:6px;margin-top:6px">' +
+            v.myCands.map(function (w) { return '<span class="mp-word' + (w === v.myHidden ? ' on' : '') + '">' + esc(w) + '</span>'; }).join('') +
+            '</div></div>' : '') +
+        '</div>';
+    }
+    return out + historyCard(v);
+  }
+
+  function guessBody(v) {
+    var isOwner = v.ownerId === MP.pid;
+    var submitted = !!(v.myGuess && v.myGuess.words.length);
+    var out = '<div class="card">' +
+      '<div class="card-head"><div class="card-title"><span class="dot"></span>정답 추리</div>' +
+      '<span class="badge ' + (v.pendingGuess === 0 ? 'gold' : '') + '">' + (v.players.length - 1 - v.pendingGuess) + ' / ' + (v.players.length - 1) + ' 제출</span></div>' +
+      turnInfo(v) +
+      (isOwner
+        ? '<p class="lead">추리자들의 비밀 답안을 기다리는 중입니다. 전원 제출하면 동시에 공개됩니다.</p>' +
+          '<div class="mp-waitlist">' + v.players.filter(function (p) { return p.id !== v.ownerId; }).map(function (p) {
+            return '<div class="mp-wl' + (p.submitted ? ' ok' : '') + '"><span class="live' + (p.connected ? ' on' : '') + '"></span>' + esc(p.name) + (p.submitted ? ' ✓' : ' …') + '</div>';
+          }).join('') + '</div>' +
+          (v.isHost && v.pendingGuess > 0
+            ? '<div class="row grow" style="margin-top:10px"><button class="btn ghost" data-act="mpForceReveal">기다리지 않고 지금 공개</button></div>' +
+              '<p class="note">연결이 끊긴 참가자가 있어 진행이 막혔을 때만 사용하세요. 미제출자는 오답 처리됩니다.</p>'
+            : '')
+        : submitted
+          ? '<p class="note gold">제출 완료: <b>' + esc(v.myGuess.words.join(', ')) + '</b>' + (v.myGuess.piece ? ' (피스 사용)' : '') + ' — 다른 플레이어를 기다리는 중입니다.</p>'
+          : '<p class="lead">히든 워드라고 생각하는 <b>명사</b>를 적어 제출하세요. 전원 제출 시 동시 공개됩니다. 피스를 1개 쓰면 답안을 하나 더 낼 수 있습니다.</p>' +
+            '<div class="inline">' +
+            '<div class="field"><label>답안 1</label><input id="mpG1" type="text" list="wordlist" autocomplete="off" placeholder="예: 항구" value="' + esc(MP.ui.g1) + '"></div>' +
+            '</div>' +
+            '<div class="inline" style="margin-top:8px">' +
+            '<div class="field"><label>답안 2 (선택 · 피스 1개)</label><input id="mpG2" type="text" list="wordlist" autocomplete="off" placeholder="피스 ' + (v.pieces || 0) + '개 보유" value="' + esc(MP.ui.g2) + '"' + ((v.pieces || 0) < 1 ? ' disabled' : '') + '></div>' +
+            '</div>' +
+            '<button class="btn primary wide" data-act="mpGuessSend" style="margin-top:10px">비밀 답안 제출</button>' +
+            '<p class="note">답안 2를 적으면 자동으로 피스 1개를 사용합니다. 내 답안은 공개 전까지 다른 플레이어에게 보이지 않습니다.</p>') +
+      '</div>';
+    out += '<div class="card"><div class="card-head"><div class="card-title"><span class="dot"></span>공개된 힌트</div>' +
+      '<span class="badge">' + v.hintCount + '개</span></div>' + hintRows(v) + '</div>';
+    return out + historyCard(v);
+  }
+
+  function revealBody(v) {
+    var r = v.reveal;
+    if (!r) return '';
+    var okWinners = r.winnerNames.length > 0;
+    var out = '<div class="card"><div class="result">' +
+      '<div class="big ' + (okWinners ? 'ok' : 'no') + '">' + (okWinners ? '정답' : '전원 오답') + '</div>' +
+      '<div class="sm">히든 워드는 <b style="color:#f8e0a0">' + esc(r.hidden) + '</b> 이었습니다.</div>' +
+      '<div class="sm">출제자 ' + esc(r.hinterName) + ' · ' + esc(r.stageLabel) + ' · 힌트 ' + r.hintCount + '개' + (r.mult === 2 ? ' · 2라운드 ×2' : '') + '</div>' +
+      '<div class="sm" style="margin-top:8px">' + (okWinners
+        ? r.winnerNames.map(esc).join(', ') + ' <span class="coin">+' + r.points + '</span>점'
+        : '출제자 ' + esc(r.hinterName) + ' <span class="coin">+' + r.hinterPts + '</span>점') + '</div>' +
+      '</div>' +
+      '<div class="divider"></div>' +
+      '<div class="mp-answers">' + r.answers.map(function (a) {
+        return '<div class="mp-ans' + (a.hit ? ' hit' : '') + '">' +
+          '<span class="nm">' + esc(a.name) + (a.isMe ? ' <i>나</i>' : '') + '</span>' +
+          '<span class="wd">' + (a.words.length ? esc(a.words.join(' / ')) : '<i>미제출</i>') + (a.piece ? ' <b class="mp-mini">피스</b>' : '') + '</span>' +
+          '<span class="mk">' + (a.hit ? '✓' : '✗') + '</span></div>';
+      }).join('') + '</div>' +
+      (v.isHost
+        ? '<div class="row grow" style="margin-top:12px"><button class="btn primary" data-act="mpNext">' +
+          (v.turn + 1 >= v.turns ? (v.round === 1 ? '라운드 정리' : '최종 결과') : '다음 출제자') + '</button>' +
+          '</div>'
+        : '<p class="note">방장이 다음 턴을 시작합니다.</p>') +
+      '</div>';
+    return out + scoreCard(v) + historyCard(v);
+  }
+
+  function scoreCard(v) {
+    var rows = v.players.slice().sort(function (a, b) { return b.score - a.score; }).map(function (p) {
+      return '<div class="mp-p' + (p.id === MP.pid ? ' me' : '') + '">' +
+        '<span class="nm">' + esc(p.name) + (p.isHost ? ' <b class="hostmark">방장</b>' : '') + '</span>' +
+        '<span class="sc">' + p.score + '점</span>' + pipsHTML(p.pieces) + '</div>';
+    }).join('');
+    return '<div class="card tight"><div class="card-head"><div class="card-title"><span class="dot"></span>현재 승점</div>' +
+      '<span class="badge">' + (v.round === 2 ? '2라운드 ×2' : '1라운드') + '</span></div><div class="mp-players">' + rows + '</div></div>';
+  }
+
+  function historyCard(v) {
+    if (!v.history || !v.history.length) return '';
+    var rows = v.history.slice(-5).reverse().map(function (e) {
+      return '<div class="mp-hrow"><span class="r">R' + e.round + '</span><span class="h">' + esc(e.hinter) + '</span>' +
+        '<span class="w">' + esc(e.hidden) + '</span>' +
+        '<span class="p">' + (e.winnerNames.length ? e.winnerNames.map(esc).join(',') + ' +' + e.points : '출제자 +' + e.hinterPts) + '</span></div>';
+    }).join('');
+    return '<div class="card tight"><div class="card-head"><div class="card-title"><span class="dot"></span>지난 턴</div></div>' +
+      '<div class="mp-hlist">' + rows + '</div></div>';
+  }
+
+  function roundEndBody(v) {
+    var r1 = v.roundLog && v.roundLog.length ? v.roundLog[0] : null;
+    var rows = r1 ? r1.rows.slice().sort(function (a, b) { return b.score - a.score; }).map(function (p, i) {
+      return '<div class="mp-rankrow"><span class="rk">' + (i + 1) + '</span><span class="nm">' + esc(p.name) + '</span><span class="sc">' + p.score + '점</span></div>';
+    }).join('') : '';
+    return '<div class="card"><div class="card-head"><div class="card-title"><span class="dot"></span>1라운드 종료</div><span class="badge gold">2라운드 준비</span></div>' +
+      '<div class="mp-ranks">' + rows + '</div>' +
+      (v.isHost
+        ? '<button class="btn primary wide" data-act="mpRound2" style="margin-top:12px">2라운드 시작 (모든 승점 ×2)</button>'
+        : '<p class="note">방장이 2라운드를 시작합니다.</p>') +
+      '<p class="note">2라운드에서는 각자 <b>1라운드에 쓰지 않은 남은 단어 4개</b> 중에서 히든 워드를 다시 고르고, 같은 순서로 한 번씩 출제자가 됩니다. 모든 승점이 2배입니다.</p>' +
+      '</div>' + historyCard(v);
+  }
+
+  function finalBody(v) {
+    var rows = (v.final || []).map(function (p) {
+      var medal = p.rank === 1 ? '🥇' : p.rank === 2 ? '🥈' : p.rank === 3 ? '🥉' : (p.rank + '위');
+      return '<div class="mp-rankrow' + (p.id === MP.pid ? ' me' : '') + '"><span class="rk">' + medal + '</span><span class="nm">' + esc(p.name) + (p.isHost ? ' <b class="hostmark">방장</b>' : '') + '</span><span class="sc">' + p.score + '점</span></div>';
+    }).join('');
+    return '<div class="card"><div class="card-head"><div class="card-title"><span class="dot"></span>최종 순위</div><span class="badge gold">게임 종료</span></div>' +
+      '<div class="mp-ranks">' + rows + '</div>' +
+      (v.isHost
+        ? '<div class="row grow" style="margin-top:12px"><button class="btn primary" data-act="mpRematch">같은 방에서 다시</button><button class="btn ghost" data-act="mpLeave">방 닫기</button></div>'
+        : '<p class="note">수고하셨습니다. 방장이 다시 시작하거나 방을 닫을 수 있습니다.</p>') +
+      '</div>' + historyCard(v);
+  }
+
+  function view() {
+    captureInputs();
+    if (!MP.role) { MP.sig = ''; return menuView(); }
+    var v = MP.view;
+    syncPhase(v);
+    if (!v) {
+      return statusBanner() + roomHeader() +
+        '<div class="card"><p class="lead" style="text-align:center;margin:18px 0">방 정보를 받는 중…</p>' +
+        '<div class="row grow"><button class="btn ghost" data-act="mpLeave">나가기</button><button class="btn ghost" data-act="mpRetry">다시 시도</button></div></div>';
+    }
+    var body;
+    if (v.phase === 'lobby') body = lobbyBody(v);
+    else if (v.phase === 'pick') body = pickBody(v);
+    else if (v.phase === 'hint') body = hintBody(v);
+    else if (v.phase === 'guess') body = guessBody(v);
+    else if (v.phase === 'reveal') body = revealBody(v);
+    else if (v.phase === 'roundEnd') body = roundEndBody(v);
+    else body = finalBody(v);
+    var extra = '';
+    if (v.isHost && (v.phase === 'hint' || v.phase === 'guess')) {
+      var meP = v.players.filter(function (p) { return p.id === MP.pid; })[0];
+      extra = '<div class="row grow" style="margin-top:6px">' +
+        '<button class="btn ghost" data-act="mpSkip">이번 턴 건너뛰기</button>' +
+        '</div><p class="note">참가자 연결이 끊겨 진행이 막혔을 때만 사용하세요.</p>';
+    }
+    return statusBanner() + roomHeader() +
+      '<div class="mp-badge-line">' + (v.phase === 'hint' || v.phase === 'guess' || v.phase === 'reveal' ? turnInfo(v) : '') + '</div>' +
+      playersCard(v) + body + extra;
+  }
+
+  function scorebar() {
+    if (!MP.role) return '<div class="sb-item">온라인 방 · 각자 폰으로 접속</div>';
+    var v = MP.view;
+    if (!v) return '<div class="sb-item">방 <b>HW-' + esc(MP.code) + '</b></div><div class="sb-sep"></div><div class="sb-item">연결 중…</div>';
+    if (v.phase === 'lobby') {
+      return '<div class="sb-item">방 <b>HW-' + esc(v.code) + '</b></div><div class="sb-sep"></div>' +
+        '<div class="sb-item">참가 <b>' + v.players.length + '</b>/' + MAXP + '</div>' +
+        '<div class="sb-sep"></div><div class="sb-item">' + (MP.role === 'host' ? '방장' : '참가자') + '</div>';
+    }
+    return '<div class="sb-item"><b>HW-' + esc(v.code) + '</b></div>' +
+      '<div class="sb-sep"></div>' +
+      '<div class="sb-item">R<b>' + v.round + '</b>/2' + (v.mult === 2 ? ' <span class="badge gold">×2</span>' : '') + '</div>' +
+      '<div class="sb-sep"></div>' +
+      '<div class="sb-item"><b>' + Math.min(v.turn + 1, v.turns || 1) + '</b>/' + (v.turns || 1) + '턴</div>' +
+      '<div class="sb-sep"></div>' +
+      '<div class="sb-item me">나 <b>' + (v.me ? v.me.score : 0) + '</b>점</div>' +
+      '<div class="sb-item">' + pipsHTML(v.pieces || 0) + '</div>';
+  }
+
+  /* ---------------- 액션 ---------------- */
+  function onAct(actName, el) {
+    var v = MP.view;
+    switch (actName) {
+      case 'mpCreate': {
+        var nEl = $('#mpNick');
+        createRoom(nEl ? nEl.value : MP.ui.nick);
+        return true;
+      }
+      case 'mpJoin': {
+        var cEl = $('#mpCode'), nEl2 = $('#mpNick');
+        joinRoom(cEl ? cEl.value : (MP.ui.joinCode || qs('room')), nEl2 ? nEl2.value : MP.ui.nick);
+        return true;
+      }
+      case 'mpLeave':
+        if (MP.role === 'host' && v && v.phase !== 'lobby' && v.phase !== 'final') {
+          if (!global.confirm || !global.confirm('진행 중인 방을 닫을까요? 참가자들의 게임이 종료됩니다.')) return true;
+        }
+        leaveRoom(false); return true;
+      case 'mpRetry':
+        if (MP.role === 'host') { MP.err = ''; MP.status = 'connecting'; render(); startHostTransport(MP.code, function () { MP.status = 'connected'; push(); }, function (m) { MP.status = 'error'; MP.err = m; render(); }); }
+        else if (MP.role === 'guest') { MP.err = ''; MP.status = 'connecting'; MP.retry = 0; render(); connectGuest(false); }
+        else { MP.err = ''; peerLibFailed = false; peerLoading = null; render(); }
+        return true;
+      case 'mpCopy': {
+        var url = inviteURL();
+        try {
+          if (global.navigator && navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(url).then(function () { toast('초대 링크를 복사했습니다: ' + url); }, function () { fallbackCopy(url); });
+          } else fallbackCopy(url);
+        } catch (e) { fallbackCopy(url); }
+        return true;
+      }
+      case 'mpStart': act('start'); return true;
+      case 'mpPickWord':
+        MP.ui.pick = el.getAttribute('data-word');
+        render();
+        return true;
+      case 'mpPickConfirm': {
+        var w = MP.ui.pick || (v && v.myHidden) || (v && v.myCands && v.myCands[0]);
+        if (!w) { toast('단어를 선택하세요.'); return true; }
+        MP.ui.pick = w;
+        act('pick', { word: w });
+        return true;
+      }
+      case 'mpHintSend': {
+        var hEl = $('#mpHint');
+        var hw = hEl ? hEl.value : MP.ui.hint;
+        if (!String(hw || '').trim()) { toast('힌트 단어를 입력하세요.'); return true; }
+        MP.ui.hint = '';
+        if (hEl) hEl.value = '';
+        act('hint', { word: String(hw).trim() });
+        return true;
+      }
+      case 'mpHintEnd': act('endHints'); return true;
+      case 'mpGuessSend': {
+        var a1 = $('#mpG1') ? $('#mpG1').value : MP.ui.g1;
+        var a2 = $('#mpG2') ? $('#mpG2').value : MP.ui.g2;
+        var words = [];
+        if (String(a1 || '').trim()) words.push(String(a1).trim());
+        if (String(a2 || '').trim()) words.push(String(a2).trim());
+        if (!words.length) { toast('답안을 입력하세요.'); return true; }
+        MP.ui.g1 = ''; MP.ui.g2 = '';
+        act('guess', { words: words, piece: words.length > 1 });
+        return true;
+      }
+      case 'mpNext': act('next'); return true;
+      case 'mpRound2': act('round2'); return true;
+      case 'mpRematch': act('rematch'); return true;
+      case 'mpSkip': act('skip'); return true;
+      case 'mpForceReveal': act('reveal'); return true;
+      case 'mpKick': {
+        var pid = el.getAttribute('data-pid');
+        if (global.confirm && !global.confirm('이 플레이어를 내보낼까요?')) return true;
+        act('kick', { pid: pid });
+        return true;
+      }
+      default: return false;
+    }
+  }
+
+  function fallbackCopy(url) {
+    try {
+      var ta = document.createElement('textarea');
+      ta.value = url;
+      ta.style.position = 'fixed'; ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      var okc = document.execCommand('copy');
+      document.body.removeChild(ta);
+      toast(okc ? '초대 링크를 복사했습니다: ' + url : '링크: ' + url);
+    } catch (e) { toast('링크: ' + url); }
+  }
+
+  function onKey(e) {
+    if (e.key !== 'Enter') return false;
+    var id = e.target && e.target.id;
+    if (!id) return false;
+    if (id === 'mpNick') {
+      e.preventDefault();
+      var nick = e.target.value;
+      var cNow = $('#mpCode');
+      if ((cNow && cNow.value) || MP.ui.joinCode || qs('room')) joinRoom(cNow ? cNow.value : (MP.ui.joinCode || qs('room')), nick);
+      else createRoom(nick);
+      return true;
+    }
+    if (id === 'mpCode') { e.preventDefault(); joinRoom($('#mpCode').value, $('#mpNick') ? $('#mpNick').value : MP.ui.nick); return true; }
+    if (id === 'mpHint') { e.preventDefault(); onAct('mpHintSend', null); return true; }
+    if (id === 'mpG1' || id === 'mpG2') { e.preventDefault(); onAct('mpGuessSend', null); return true; }
+    return false;
+  }
+
+  /* ---------------- 세션 복구 / 부트 ---------------- */
+  function boot() {
+    if (MP.booted) return;
+    MP.booted = true;
+    MP.pid = PID;
+    MP.ui.nick = sGet('hw_mp_name') || '';
+    var sess = null;
+    try { sess = JSON.parse(sGet('hw_mp_sess') || 'null'); } catch (e) { sess = null; }
+    var room = qs('room');
+    if (room) MP.ui.joinCode = String(room).replace(/[^0-9]/g, '').slice(0, 4);
+
+    if (sess && sess.role === 'host' && sess.code) {
+      var snap = null;
+      try { snap = JSON.parse(sGet('hw_mp_game_' + sess.code) || 'null'); } catch (e) { snap = null; }
+      MP.local = isLocal();
+      MP.role = 'host';
+      MP.code = sess.code;
+      MP.name = sess.name || MP.ui.nick || '방장';
+      MP.ui.nick = MP.name;
+      MP.game = snap ? Core.Game.from(snap) : new Core.Game((Date.now() ^ 0x9e3779b9) >>> 0);
+      MP.game.code = sess.code;
+      MP.game.addPlayer(MP.pid, MP.name, true);
+      MP.game.setConnected(MP.pid, true);
+      MP.status = 'connecting';
+      global.__hwWantsOnline = true;
+      render();
+      startHostTransport(MP.code, function () {
+        MP.status = 'connected';
+        push();
+        toast('방 HW-' + MP.code + ' 을 이어서 엽니다.');
+      }, function (msg) {
+        MP.status = 'error'; MP.err = msg; render();
+      });
+      return;
+    }
+
+    if (sess && sess.role === 'guest' && sess.code && (!room || room === sess.code)) {
+      MP.local = isLocal();
+      MP.role = 'guest';
+      MP.code = sess.code;
+      MP.name = sess.name || MP.ui.nick || '플레이어';
+      MP.ui.nick = MP.name;
+      MP.ui.joinCode = sess.code;
+      MP.status = 'connecting';
+      MP.everConnected = false;
+      global.__hwWantsOnline = true;
+      render();
+      connectGuest(true);
+      if (room) return;
+      return;
+    }
+
+    if (room) {
+      MP.local = isLocal();
+      MP.ui.joinCode = String(room).replace(/[^0-9]/g, '').slice(0, 4);
+      MP.name = MP.ui.nick;
+      global.__hwWantsOnline = true;
+      render();
+    }
+  }
+
+  function wantsOnline() {
+    if (global.__hwWantsOnline) return true;
+    if (qs('room')) return true;
+    return false;
+  }
+
+  global.HWMP = {
+    view: view,
+    scorebar: scorebar,
+    onAct: onAct,
+    onKey: onKey,
+    wantsOnline: wantsOnline,
+    init: boot,
+    peek: function () { return { role: MP.role, status: MP.status, code: MP.code, err: MP.err, retry: MP.retry, view: MP.view }; },
+    hostGame: function () { return MP.role === 'host' ? MP.game : null; }
+  };
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
+  else boot();
+})(typeof window !== 'undefined' ? window : globalThis);
 
 </script>
 </body>
