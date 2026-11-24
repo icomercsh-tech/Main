@@ -4086,9 +4086,9 @@ input::placeholder{color:#5a5a70}
           '<div class="mp-waitlist">' + v.players.filter(function (p) { return p.id !== v.ownerId; }).map(function (p) {
             return '<div class="mp-wl' + (p.submitted ? ' ok' : '') + '"><span class="live' + (p.connected ? ' on' : '') + '"></span>' + esc(p.name) + (p.submitted ? ' ✓' : ' …') + '</div>';
           }).join('') + '</div>' +
-          (v.isHost && v.pendingGuess > 0
+          (v.isHost && v.players.filter(function (p) { return p.id !== v.ownerId && !p.submitted && !p.connected; }).length > 0
             ? '<div class="row grow" style="margin-top:10px"><button class="btn ghost" data-act="mpForceReveal">기다리지 않고 지금 공개</button></div>' +
-              '<p class="note">연결이 끊긴 참가자가 있어 진행이 막혔을 때만 사용하세요. 미제출자는 오답 처리됩니다.</p>'
+              '<p class="note">연결이 끊긴 참가자가 있어 진행이 막혔습니다. 미제출자는 오답 처리됩니다.</p>'
             : '')
         : submitted
           ? '<p class="note gold">제출 완료: <b>' + esc(v.myGuess.words.join(', ')) + '</b>' + (v.myGuess.piece ? ' (피스 사용)' : '') + ' — 다른 플레이어를 기다리는 중입니다.</p>'
@@ -4202,11 +4202,13 @@ input::placeholder{color:#5a5a70}
     else if (v.phase === 'roundEnd') body = roundEndBody(v);
     else body = finalBody(v);
     var extra = '';
-    if (v.isHost && (v.phase === 'hint' || v.phase === 'guess')) {
-      var meP = v.players.filter(function (p) { return p.id === MP.pid; })[0];
-      extra = '<div class="row grow" style="margin-top:6px">' +
-        '<button class="btn ghost" data-act="mpSkip">이번 턴 건너뛰기</button>' +
-        '</div><p class="note">참가자 연결이 끊겨 진행이 막혔을 때만 사용하세요.</p>';
+    if (v.isHost && v.phase === 'hint') {
+      var own = v.players.filter(function (p) { return p.id === v.ownerId; })[0];
+      if (own && !own.connected) {
+        extra = '<div class="row grow" style="margin-top:6px">' +
+          '<button class="btn ghost" data-act="mpSkip">출제자 연결 끊김 · 이번 턴 건너뛰기</button>' +
+          '</div><p class="note">연결이 끊긴 출제자의 턴입니다. 재접속을 기다리거나 건너뛰세요.</p>';
+      }
     }
     return statusBanner() + roomHeader() +
       '<div class="mp-badge-line">' + (v.phase === 'hint' || v.phase === 'guess' || v.phase === 'reveal' ? turnInfo(v) : '') + '</div>' +
