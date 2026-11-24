@@ -1,0 +1,2835 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#07070a">
+<meta name="description" content="데블스 플랜 3 히든 워드 — 오프라인 한국어 Word2Vec 유사도 엔진으로 즐기는 AI 추리 게임">
+<title>HIDDEN WORD · 데블스 플랜 3</title>
+<style>
+:root{
+  --bg:#07070a; --bg2:#0b0b10; --card:#111117; --card2:#17171f; --line:#262632;
+  --gold:#e2b74e; --gold2:#f8e0a0; --cyan:#4fd8e8; --red:#ff5470; --green:#5ee0a0;
+  --txt:#ececf3; --dim:#9b9bb0; --dim2:#6d6d82;
+  --r:16px;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{
+  background:
+    radial-gradient(900px 500px at 15% -10%, rgba(226,183,78,.10), transparent 60%),
+    radial-gradient(700px 400px at 100% 0%, rgba(79,216,232,.07), transparent 55%),
+    var(--bg);
+  color:var(--txt);
+  font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",system-ui,sans-serif;
+  font-size:16px; line-height:1.55; min-height:100vh;
+  padding-bottom:40px;
+}
+.app{max-width:760px;margin:0 auto;padding:18px 16px 0}
+.hidden{display:none !important}
+
+/* ---------- header ---------- */
+.topbar{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;padding:6px 2px 14px}
+.topbar .row{flex:0 0 auto;flex-wrap:nowrap}
+.topbar .brand{flex:1 1 auto;min-width:0}
+.brand h1{
+  margin:0;font-size:22px;letter-spacing:.22em;white-space:nowrap;font-weight:800;
+  background:linear-gradient(100deg,#fff 0%,var(--gold2) 45%,var(--gold) 70%,#a9832f 100%);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  font-family:"Optima","Times New Roman",serif;
+}
+.brand .sub{margin-top:6px;font-size:12px;color:var(--dim);letter-spacing:.06em}
+.brand .sub b{color:var(--gold);font-weight:600}
+.iconbtn{
+  min-width:44px;height:44px;border-radius:12px;border:1px solid var(--line);
+  background:#101018;color:var(--gold);font-size:16px;cursor:pointer;
+  display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:0 12px
+}
+.iconbtn:active{transform:scale(.97)}
+.iconbtn small{color:var(--dim);font-size:12px;letter-spacing:.02em}
+
+/* ---------- scorebar ---------- */
+.scorebar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+  border:1px solid var(--line);background:linear-gradient(180deg,#12121a,#0d0d13);
+  border-radius:14px;padding:10px 12px;margin-bottom:14px;font-size:13px}
+.sb-item{display:flex;align-items:center;gap:6px;color:var(--dim)}
+.sb-item b{color:var(--txt);font-size:15px;font-variant-numeric:tabular-nums}
+.sb-item.me b{color:var(--gold2)}
+.sb-item.ai b{color:var(--cyan)}
+.sb-sep{width:1px;height:18px;background:var(--line)}
+.pieces{display:flex;gap:4px}
+.piece{width:11px;height:11px;border-radius:50%;background:#2a2a38;border:1px solid #33334a}
+.piece.on{background:radial-gradient(circle at 35% 30%,#fff3cf,var(--gold));border-color:#8d6f22;box-shadow:0 0 8px rgba(226,183,78,.5)}
+
+/* ---------- tabs ---------- */
+.tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;background:#0d0d13;
+  border:1px solid var(--line);border-radius:14px;padding:5px;margin-bottom:16px;position:sticky;top:0;z-index:30;
+  box-shadow:0 8px 18px rgba(0,0,0,.55)}
+.tab{border:0;background:transparent;color:var(--dim);font-size:14px;font-weight:600;
+  padding:11px 6px;border-radius:10px;cursor:pointer;letter-spacing:.02em}
+.tab.active{background:linear-gradient(180deg,#242433,#1a1a24);color:var(--gold2);
+  box-shadow:inset 0 0 0 1px rgba(226,183,78,.35)}
+.tab:active{transform:scale(.99)}
+
+/* ---------- cards ---------- */
+.card{background:linear-gradient(180deg,#121219,#0e0e14);border:1px solid var(--line);
+  border-radius:var(--r);padding:16px;margin-bottom:14px;box-shadow:0 10px 30px rgba(0,0,0,.35)}
+.card.tight{padding:13px}
+.card-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}
+.card-title{font-size:14px;font-weight:700;letter-spacing:.04em;color:#d9d9e6;display:flex;align-items:center;gap:8px}
+.card-title .dot{width:6px;height:6px;border-radius:50%;background:var(--gold);box-shadow:0 0 8px var(--gold)}
+.lead{font-size:13.5px;color:var(--dim);margin:0 0 12px}
+.lead b{color:#dcdce8;font-weight:600}
+.mono{font-variant-numeric:tabular-nums}
+
+/* ---------- buttons ---------- */
+.btn{appearance:none;border:1px solid var(--line);background:#1a1a24;color:var(--txt);
+  border-radius:12px;padding:13px 16px;font-size:15px;font-weight:600;cursor:pointer;
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:46px;white-space:nowrap;
+  transition:transform .06s ease, background .15s ease}
+.btn:active{transform:scale(.985)}
+.btn.primary{background:linear-gradient(180deg,#f3d27c,#d3a53c);color:#1a1405;border-color:#8d6f22;
+  box-shadow:0 6px 18px rgba(226,183,78,.20)}
+.btn.ghost{background:#12121a}
+.btn.cyan{background:linear-gradient(180deg,#7fe7f2,#3ab6c9);color:#04191d;border-color:#2b8c9c}
+.btn.danger{background:#2a121a;border-color:#5d2434;color:#ffb3c1}
+.btn[disabled]{opacity:.42;cursor:not-allowed}
+.btn.wide{width:100%}
+.row{display:flex;gap:8px;flex-wrap:wrap}
+.row.grow>*{flex:1 1 0;padding-left:10px;padding-right:10px}
+
+/* ---------- candidates ---------- */
+.cands{display:grid;grid-template-columns:repeat(auto-fit,minmax(104px,1fr));gap:8px}
+.chip{position:relative;border:1px solid var(--line);background:#15151d;color:var(--txt);border-radius:14px;
+  padding:14px 10px;text-align:center;cursor:pointer;transition:all .12s ease}
+.chip .tag{position:absolute;top:6px;left:8px;font-size:10px;color:var(--dim2);letter-spacing:.1em}
+.chip .w{font-size:17px;font-weight:700;letter-spacing:.02em}
+.chip .hintline{font-size:11px;color:var(--dim);margin-top:3px}
+.chip:active{transform:scale(.985)}
+.chip.sel{border-color:var(--gold);background:linear-gradient(180deg,rgba(226,183,78,.16),rgba(226,183,78,.04));
+  box-shadow:0 0 0 1px rgba(226,183,78,.4),0 8px 20px rgba(226,183,78,.10)}
+.chip.sel .w{color:var(--gold2)}
+.chip.answer-ok{border-color:var(--green);background:rgba(94,224,160,.10)}
+.chip.answer-no{border-color:var(--red);background:rgba(255,84,112,.10)}
+.chip.dimmed{opacity:.4}
+.chip .pick{position:absolute;top:6px;right:8px;font-size:11px;color:var(--gold2)}
+
+/* ---------- hint list ---------- */
+.hints{display:flex;flex-direction:column;gap:7px;margin-top:4px}
+.hint{display:grid;grid-template-columns:26px 1fr auto;gap:10px;align-items:center;
+  background:#101017;border:1px solid #1e1e29;border-radius:11px;padding:9px 11px}
+.hint .no{font-size:11px;color:var(--dim2);font-variant-numeric:tabular-nums}
+.hint .body .wline{display:flex;align-items:baseline;gap:8px;justify-content:space-between}
+.hint .body .w{font-weight:700;font-size:15.5px}
+.hint .body .s{font-size:13px;font-weight:700;font-variant-numeric:tabular-nums}
+.hint .bar{height:5px;background:#1d1d28;border-radius:4px;overflow:hidden;margin-top:6px}
+.hint .bar i{display:block;height:100%;border-radius:4px;transition:width .45s ease}
+.hint.top{border-color:rgba(226,183,78,.55);background:linear-gradient(90deg,rgba(226,183,78,.12),rgba(226,183,78,.02))}
+.hint.flash{animation:flash .6s ease}
+@keyframes flash{0%{background:rgba(226,183,78,.28)}100%{background:transparent}}
+.hint-empty{text-align:center;color:var(--dim2);font-size:13px;padding:22px 0}
+.stagebar{display:flex;gap:6px;margin:2px 0 12px}
+.stage{flex:1;text-align:center;font-size:11px;color:var(--dim2);border:1px solid #1f1f2a;border-radius:8px;padding:6px 2px}
+.stage.on{color:var(--gold2);border-color:rgba(226,183,78,.5);background:rgba(226,183,78,.07)}
+
+/* ---------- gauge ---------- */
+.gaugewrap{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.gauge{--p:0;--c:var(--cyan);position:relative;width:132px;height:132px;border-radius:50%;
+  background:conic-gradient(var(--c) calc(var(--p) * 1%), #1b1b26 0);
+  flex:0 0 132px}
+.gauge::after{content:"";position:absolute;inset:11px;border-radius:50%;background:#0e0e15;
+  box-shadow:inset 0 0 24px rgba(0,0,0,.7)}
+.gauge .val{position:absolute;inset:18px;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:2;text-align:center;line-height:1}
+.gauge .val b{font-size:33px;font-weight:800;letter-spacing:-.03em;font-variant-numeric:tabular-nums;white-space:nowrap}
+.gauge .val b span{font-size:14px;font-weight:700;margin-left:1px}
+.gauge .val em{font-style:normal;display:block;font-size:8.5px;color:var(--dim2);letter-spacing:.16em;margin-top:5px}
+.gauge.danger{--c:var(--red);filter:drop-shadow(0 0 12px rgba(255,84,112,.45))}
+.gauge.mid{--c:var(--gold)}
+.gauge.low{--c:var(--cyan)}
+
+.metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;flex:1 1 220px}
+.metric{background:#101017;border:1px solid #1e1e29;border-radius:12px;padding:10px}
+.metric .k{font-size:10.5px;color:var(--dim2);letter-spacing:.04em}
+.metric .v{font-size:20px;font-weight:800;margin-top:2px;font-variant-numeric:tabular-nums}
+.metric .sub{font-size:10.5px;color:var(--dim);margin-top:2px}
+.mbar{height:4px;background:#1d1d28;border-radius:3px;overflow:hidden;margin-top:7px}
+.mbar i{display:block;height:100%;background:linear-gradient(90deg,#3ab6c9,#e2b74e)}
+
+/* ---------- badges / notes ---------- */
+.badge{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:700;
+  padding:4px 9px;border-radius:999px;border:1px solid #2a2a38;color:var(--dim);background:#12121a}
+.badge.gold{color:var(--gold2);border-color:rgba(226,183,78,.45);background:rgba(226,183,78,.10)}
+.badge.cyan{color:#9becf6;border-color:rgba(79,216,232,.4);background:rgba(79,216,232,.10)}
+.badge.red{color:#ffb0bd;border-color:rgba(255,84,112,.45);background:rgba(255,84,112,.10)}
+.badge.green{color:#a6f2cc;border-color:rgba(94,224,160,.4);background:rgba(94,224,160,.10)}
+.note{font-size:12.5px;color:var(--dim);border-left:2px solid #2c2c3b;padding:2px 0 2px 10px;margin:10px 0 0}
+.note.warn{border-color:var(--red);color:#ffbcc7;background:rgba(255,84,112,.06);padding:10px 12px;border-radius:10px}
+.note.gold{border-color:var(--gold);color:#f0dda6;background:rgba(226,183,78,.06);padding:10px 12px;border-radius:10px}
+.tips{margin:12px 0 0;padding:0;list-style:none;display:flex;flex-direction:column;gap:6px}
+.tips li{font-size:12.5px;color:#c9c9d8;background:#12121a;border:1px solid #1e1e29;border-radius:9px;padding:8px 10px}
+.tips li::before{content:"▸";color:var(--gold);margin-right:6px}
+
+/* ---------- inputs ---------- */
+.field{display:flex;flex-direction:column;gap:6px;flex:1 1 160px}
+.field label{font-size:11.5px;color:var(--dim);letter-spacing:.03em}
+input[type=text],input[type=password],select{
+  width:100%;background:#0c0c12;border:1px solid #262634;border-radius:11px;color:var(--txt);
+  padding:12px 13px;font-size:16px;font-family:inherit;outline:none;min-height:46px}
+input:focus,select:focus{border-color:rgba(226,183,78,.6);box-shadow:0 0 0 3px rgba(226,183,78,.10)}
+input::placeholder{color:#5a5a70}
+.inline{display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap}
+
+/* ---------- persona ---------- */
+.personas{display:flex;flex-direction:column;gap:9px}
+.persona{background:#101017;border:1px solid #1f1f2a;border-radius:13px;padding:12px}
+.persona.hit{border-color:rgba(255,84,112,.5);background:rgba(255,84,112,.06)}
+.persona.safe{border-color:rgba(94,224,160,.35);background:rgba(94,224,160,.05)}
+.persona .ph{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.persona .nm{font-weight:800;font-size:14.5px}
+.persona .st{font-size:11px;color:var(--dim)}
+.persona .say{font-size:12.5px;color:#c3c3d4;margin-top:7px;word-break:keep-all}
+.rank{display:flex;gap:6px;margin-top:9px;flex-wrap:wrap}
+.rank span{font-size:11px;border:1px solid #26263a;border-radius:7px;padding:3px 7px;color:var(--dim)}
+.rank span.first{color:var(--gold2);border-color:rgba(226,183,78,.45);background:rgba(226,183,78,.08)}
+
+/* ---------- result ---------- */
+.result{text-align:center;padding:8px 0 2px}
+.result .big{font-size:30px;font-weight:900;letter-spacing:.02em}
+.result .big.ok{color:var(--green)}
+.result .big.no{color:var(--red)}
+.result .sm{color:var(--dim);font-size:13px;margin-top:4px}
+.coin{font-variant-numeric:tabular-nums;color:var(--gold2);font-weight:800}
+
+/* ---------- modal / toast ---------- */
+.modal{position:fixed;inset:0;z-index:80;display:flex;align-items:flex-end;justify-content:center;
+  background:rgba(0,0,0,.66);backdrop-filter:blur(4px);padding:0}
+.modal-box{width:100%;max-width:720px;max-height:88vh;overflow:auto;background:linear-gradient(180deg,#15151e,#0d0d13);
+  border:1px solid #2a2a38;border-radius:20px 20px 0 0;padding:18px 18px 26px}
+@media(min-width:760px){.modal{align-items:center}.modal-box{border-radius:20px}}
+.modal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.modal-head h2{margin:0;font-size:17px;letter-spacing:.02em}
+.modal-body{font-size:13.5px;color:#cfcfdd;line-height:1.68}
+.modal-body h3{font-size:13px;color:var(--gold2);margin:16px 0 6px;letter-spacing:.04em}
+.modal-body ul{margin:0;padding-left:18px}
+.modal-body li{margin:3px 0}
+.modal-body table{width:100%;border-collapse:collapse;margin:8px 0;font-size:12.5px}
+.modal-body th,.modal-body td{border:1px solid #26263a;padding:7px 8px;text-align:center}
+.modal-body th{background:#181822;color:var(--gold2);font-weight:600}
+.toast{position:fixed;left:50%;bottom:26px;transform:translate(-50%,20px);opacity:0;pointer-events:none;
+  background:#1d1d29;border:1px solid #34344a;color:#eee;padding:11px 16px;border-radius:12px;font-size:13px;
+  z-index:120;transition:all .22s ease;max-width:88vw;text-align:center}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+
+/* ---------- misc ---------- */
+.foot{text-align:center;color:var(--dim2);font-size:11.5px;padding:18px 0 6px;line-height:1.7}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:6px 12px;font-size:12.5px;color:var(--dim)}
+.kv b{color:#dcdce8;font-weight:600;text-align:right}
+.divider{height:1px;background:linear-gradient(90deg,transparent,#26263a,transparent);margin:14px 0}
+.difftabs{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:10px}
+.difftab{border:1px solid #24242f;background:#111119;border-radius:10px;padding:10px 6px;color:var(--dim);
+  font-size:12.5px;font-weight:600;cursor:pointer}
+.difftab.on{border-color:rgba(226,183,78,.55);color:var(--gold2);background:rgba(226,183,78,.08)}
+.difftab small{display:block;font-weight:400;font-size:10.5px;color:var(--dim2);margin-top:2px}
+.labform{display:flex;flex-direction:column;gap:10px}
+.recent{display:flex;flex-direction:column;gap:6px;margin-top:10px}
+.recent .r{display:flex;justify-content:space-between;font-size:12.5px;color:var(--dim);
+  border-bottom:1px dashed #1f1f2b;padding-bottom:5px}
+.recent .r b{color:#dcdce8}
+.legend{display:flex;gap:12px;flex-wrap:wrap;font-size:11px;color:var(--dim2);margin-top:10px}
+.legend i{display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:4px}
+
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="topbar">
+    <div class="brand">
+      <h1>HIDDEN WORD</h1>
+      <div class="sub">데블스 플랜 3 · 5일차 메인매치</div>
+    </div>
+    <div class="row" style="gap:6px">
+      <button class="iconbtn" data-act="rules" aria-label="게임 룰">?</button>
+      <button class="iconbtn" data-act="settings" aria-label="설정">⚙</button>
+    </div>
+  </header>
+
+  <div class="scorebar" id="scorebar"></div>
+
+  <nav class="tabs" id="tabs">
+    <button class="tab active" data-act="mode" data-mode="guesser">추리자</button>
+    <button class="tab" data-act="mode" data-mode="setter">출제자</button>
+    <button class="tab" data-act="mode" data-mode="lab">테스트랩</button>
+  </nav>
+
+  <main id="view"></main>
+
+  <div class="foot">
+    내장 한국어 Word2Vec 유사도 엔진 · 인터넷 연결 없이 동작<br>
+    데블스 플랜 3 &lt;히든 워드&gt; 팬메이드 게임 · 학습용 구현
+  </div>
+</div>
+
+<div class="modal hidden" id="modal">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h2 id="modal-title">게임 룰</h2>
+      <button class="iconbtn" data-act="closeModal" aria-label="닫기">✕</button>
+    </div>
+    <div class="modal-body" id="modal-body"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+<datalist id="wordlist"></datalist>
+
+<script>
+(function (global) {
+  'use strict';
+
+  /* ============================================================
+     HIDDEN WORD — offline Korean Word2Vec-style similarity engine
+     단일 HTML 파일에서 100% 오프라인으로 동작하는 내장 엔진
+     ============================================================ */
+
+  var DOMAINS = ['감정','건축','경제','공간','과학','교육','군사','기술','놀이','도구','동물','문화','물','미디어','법','사고','사람','사회','생활','스포츠','시간','식물','신체','예술','음식','의료','이동','자연','장소','정치','종교','통신','패션'];
+  var DI = {};
+  DOMAINS.forEach(function (d, i) { DI[d] = i; });
+  var ND = DOMAINS.length;
+
+  var RAW = [
+"음식|음식:5|밥,요리,맛,식사,먹거리|",
+"경제|경제:5|돈,시장,거래,투자,가격|",
+"사고|사고:5|생각,판단,기억,교통사고,위험|p:1",
+"감정|감정:5|마음,기분,느낌,정서|",
+"자연|자연:5|산,바다,하늘,땅,계절|",
+"동물|동물:5|짐승,새,물고기,야생,울음|",
+"장소|장소:5|곳,공간,위치,지역|",
+"도구|도구:5|연장,사용,손,기구|",
+"신체|신체:5|몸,부위,건강,해부|",
+"스포츠|스포츠:5|운동,경기,선수,승부|",
+"예술|예술:5|작품,표현,창작,감상|",
+"교육|교육:5|배움,학교,가르침,공부|",
+"의료|의료:5|병원,치료,건강,진료|",
+"식물|식물:5|나무,꽃,풀,잎|",
+"건축|건축:5|집,건물,설계,공사|",
+"미디어|미디어:5|방송,뉴스,신문,콘텐츠|",
+"패션|패션:5|옷,스타일,유행,입음|",
+"군사|군사:5|군대,전쟁,무기,훈련|",
+"통신|통신:5|전화,인터넷,연결,신호|",
+"이동|이동:5|가다,오다,교통,거리|",
+"공간|공간:4|장소,넓이,위치,차원|",
+"결혼|사회:4,문화:3|부부,예식,가족,사랑|",
+"공정|사회:4,법:2|정의,공평,규칙,판단|",
+"구속|법:4|체포,감금,자유,제약|",
+"지금|시간:4|현재,순간,오늘|",
+"고요|감정:2,자연:2|조용함,침묵,평온,밤|",
+"대화|문화:4,사고:3|말,이야기,소통,의견|",
+"수학|과학:4,교육:3|숫자,계산,공식,문제|",
+"반복|사고:2,시간:2|되풀이,습관,주기|",
+"실험|과학:5|연구,관찰,결과,가설|",
+"힘|과학:3,신체:3|근육,세기,운동,물리|",
+"동네|장소:4|마을,이웃,골목,지역|",
+"향기|자연:3|냄새,꽃,향수,후각|",
+"연기|자연:3|불,회색,냄새,피우다|",
+"맛|음식:4|혀,단맛,쓴맛,요리|",
+"기분|감정:4|마음,감정,컨디션|",
+"의견|사고:3,사회:3|주장,대화,판단|",
+"소통|사회:3,문화:3|대화,이해,전달|",
+"문자|통신:3,문화:3|글,메시지,휴대폰|",
+"메시지|통신:4|문자,전달,앱|",
+"이해|사고:4|파악,납득,설명|",
+"설명|사고:3,문화:3|이해,말,글|",
+"감각|신체:3,사고:2|오감,느낌,지각|",
+"정리|생활:3,사고:2|정돈,청소,순서|",
+"준비|생활:3|계획,대비,사전|",
+"안전|사회:3|위험,보호,사고|",
+"위험|사회:3|안전,사고,무섭|",
+"놀이문화|문화:3,놀이:3|축제,여가,즐김|",
+"기술|기술:5|기계,발전,응용,산업|",
+"문화|문화:5|예술,전통,관습,콘텐츠|",
+"이별|감정:4|헤어짐,눈물,그리움,아픔|",
+"만남|사회:3,감정:3|인연,첫만남,설렘,약속|",
+"바다|물:5,자연:4,공간:2|파도,해변,수평선,물고기,항구,소금,깊이|s:해양;c:파도;h:자연;a:사막",
+"해양|물:5,자연:4|바다,심해,선박,수평선|s:바다;h:자연",
+"파도|물:5,자연:4|바다,소리,해변,출렁임|s:물결;c:바다;h:자연",
+"물결|물:4,자연:3|파도,호수,잔물결,흐름|s:파도;h:자연",
+"해변|자연:4,장소:3,물:2|바다,모래,파도,해수욕장,일광욕|c:바다;c:모래;h:장소",
+"모래|자연:4|해변,사막,알갱이,유리|c:해변;h:자연",
+"사막|자연:5,장소:3|모래,선인장,낙타,오아시스,더위|c:모래;h:자연;a:바다",
+"산|자연:5,장소:3|등산,봉우리,숲,계곡,바위|c:등산;h:자연;a:바다",
+"강|자연:5,물:4|물,흐름,다리,낚시,하천|c:물;h:자연",
+"호수|자연:4,물:5|고요,물,보트,오리|c:물;h:자연",
+"하천|자연:4,물:4|강,물,흐름|s:강;h:자연",
+"숲|자연:5,식물:4|나무,산책,잎,그늘,새|c:나무;h:자연",
+"나무|식물:5,자연:4|숲,잎,뿌리,줄기,그늘|h:식물",
+"꽃|식물:5,자연:3|장미,향기,정원,봄,잎|c:향기;h:식물",
+"풀|식물:4,자연:4|잔디,마당,초록,벌레|s:잔디;h:식물",
+"잔디|식물:4,자연:3|풀,마당,운동장,초록|s:풀;h:식물",
+"흙|자연:5|땅,진흙,농사,먼지|c:땅;h:자연",
+"돌|자연:4|바위,자갈,벽,단단함|c:바위;h:자연",
+"바위|자연:4|돌,산,절벽,단단함|s:돌;h:자연",
+"자갈|자연:3|돌,모래,길|h:자연",
+"바람|자연:5|시원함,가을,구름,산들바람,선풍기|c:구름;h:자연",
+"비|자연:5,물:3|우산,구름,빗방울,장마|c:우산;h:자연",
+"눈|자연:5,물:2|겨울,눈사람,서리,하얀색,시력,홍채|h:자연;c:겨울;p:1",
+"구름|자연:5|하늘,비,흰색,떠다님|c:하늘;h:자연",
+"태양|자연:5|빛,낮,뜨거움,햇살,달|c:빛;h:자연;a:달",
+"달|자연:5|밤,별,보름달,은빛|c:별;h:자연;a:태양",
+"별|자연:4,공간:3|밤,하늘,반짝임,우주|c:하늘;h:자연;p:1",
+"하늘|자연:5,공간:4|구름,파란색,별,높이|c:구름;h:자연",
+"무지개|자연:4|비,색깔,하늘,일곱빛|c:비;h:자연",
+"안개|자연:4|흐림,아침,뿌연,시야|h:자연",
+"서리|자연:3,시간:2|겨울,추위,하얀색,이슬|c:겨울;h:자연",
+"이슬|자연:3|아침,물방울,풀잎|h:자연",
+"얼음|자연:4,물:3|차가움,겨울,빙판,녹음|c:물;h:자연",
+"불|자연:4|뜨거움,연기,재,화상|c:연기;h:자연;a:물",
+"물|자연:5,물:5|마시다,강,바다,액체,목마름|c:강;h:자연;a:불",
+"태풍|자연:4|바람,비,피해,강풍|s:폭풍;h:자연",
+"폭풍|자연:4|태풍,바람,파도,피해|s:태풍;h:자연",
+"번개|자연:4|천둥,폭풍,전기,번쩍임|c:천둥;h:자연",
+"천둥|자연:4|번개,소리,폭풍,우르릉|c:번개;h:자연",
+"지진|자연:4|흔들림,재난,땅,피해|h:자연",
+"화산|자연:4|용암,분화,산,재|c:산;h:자연",
+"동굴|자연:4,장소:3|어둠,박쥐,바위,탐험|h:장소",
+"절벽|자연:4,공간:3|낭떠러지,바위,높이,위험|h:자연",
+"계곡|자연:4,장소:3|물,산,소리,시원함|c:산;h:장소",
+"폭포|자연:4,물:4|물,소리,떨어짐,계곡|c:물;h:자연",
+"섬|자연:4,장소:4|바다,고립,배,여행|c:바다;h:장소",
+"대륙|자연:3,공간:4|땅,넓이,나라|h:자연",
+"늪|자연:4|진흙,물,습지,빠짐|h:자연",
+"정글|자연:4,장소:3|나무,야생,더위,밀림|h:자연",
+"오아시스|자연:3,장소:3|사막,물,쉼터|c:사막;h:장소",
+"노을|자연:3,시간:3|저녁,하늘,붉은색,해질녘|c:저녁;h:자연",
+"새벽|시간:4,자연:2|아침,어둠,일출,조용함|h:시간",
+"황혼|시간:3,자연:2|저녁,노을,어둠|s:노을;h:시간",
+"그림자|자연:2,공간:3|빛,어둠,사람,따라감|c:빛",
+"빛|자연:4|태양,밝음,전등,어둠|c:태양;h:자연;a:어둠",
+"어둠|자연:4|밤,빛,무서움,캄캄함|a:빛;h:자연",
+"봄|시간:4,자연:4|꽃,따뜻함,새싹,계절|c:꽃;h:계절",
+"여름|시간:4,자연:4|더위,바다,휴가,계절|c:바다;h:계절",
+"가을|시간:4,자연:4|단풍,선선함,추수,계절|c:단풍;h:계절",
+"겨울|시간:4,자연:4|추위,눈,동면,계절|c:눈;h:계절",
+"계절|시간:4,자연:3|봄,여름,가을,겨울|h:시간",
+"날씨|자연:4,시간:2|비,맑음,예보,기온|s:기후;h:자연",
+"기후|자연:4|날씨,온난화,지구,계절|s:날씨;h:자연",
+"기온|자연:3,과학:2|온도,더위,추위,날씨|s:온도;h:자연",
+"온도|과학:3,자연:3|기온,체온,높낮이|s:기온",
+"땅|자연:5,공간:4|흙,지면,대지,농사|c:흙;h:자연",
+"우주|자연:4,공간:5,과학:4|별,행성,은하,무중력|c:별;h:공간",
+"행성|공간:4,과학:3|우주,지구,궤도,별|c:우주",
+"지구|자연:4,공간:4,과학:3|행성,환경,대륙,인류|c:행성",
+"개|동물:5|강아지,짖음,산책,애완동물|c:강아지;h:동물",
+"강아지|동물:5|개,애완동물,귀여움,산책|s:개;h:동물",
+"고양이|동물:5|야옹,애완동물,쥐,귀여움|h:동물",
+"새|동물:5|날개,하늘,알,노래|h:동물",
+"물고기|동물:4,물:4|바다,낚시,비늘,수족관|c:바다;h:동물",
+"말|동물:4,이동:2|경마,안장,달리기,목장,언어,대화|c:대화;h:동물;p:1",
+"소|동물:4,음식:3|한우,목장,고기,뿔|c:목장;h:동물",
+"돼지|동물:4,음식:3|삼겹살,축사,고기|c:축사;h:동물",
+"닭|동물:4,음식:3|계란,닭장,고기,울음|c:계란;h:동물",
+"호랑이|동물:5|맹수,줄무늬,산,용기|c:사자;h:동물",
+"사자|동물:5|맹수,갈기,초원,용기|c:호랑이;h:동물",
+"코끼리|동물:5|코,거대함,초원|h:동물",
+"원숭이|동물:5|나무,재주,영장류|h:동물",
+"토끼|동물:5|귀,당근,빠름|h:동물",
+"쥐|동물:4|고양이,땅굴,설치류|c:고양이;h:동물",
+"뱀|동물:4|독,기어감,비늘|h:동물",
+"거북이|동물:4|느림,등껍질,바다|h:동물",
+"개구리|동물:4,물:3|연못,도약,올챙이|c:연못;h:동물",
+"벌|동물:4|꿀,침,꽃|c:꽃;h:동물",
+"나비|동물:4|꽃,날개,봄|c:꽃;h:동물",
+"개미|동물:4|부지런함,집단,땅|h:동물",
+"거미|동물:4|거미줄,벌레|h:동물",
+"상어|동물:4,물:3|바다,이빨,위험|c:바다;h:동물",
+"고래|동물:4,물:3|바다,거대함,분수|c:바다;h:동물",
+"돌고래|동물:4,물:3|바다,지능,점프|c:고래;h:동물",
+"펭귄|동물:4|남극,얼음,뒤뚱|c:얼음;h:동물",
+"독수리|동물:4|하늘,사냥,날개|c:하늘;h:동물",
+"참새|동물:4|새,작음,지저귐|c:새;h:동물",
+"까마귀|동물:4|새,검은색,울음|c:새;h:동물",
+"늑대|동물:4|무리,울음,사냥|h:동물",
+"여우|동물:4|꾀,교활,숲|h:동물",
+"곰|동물:4|힘,동굴,겨울잠|c:동굴;h:동물",
+"사슴|동물:4|뿔,숲,우아함|c:숲;h:동물",
+"용|동물:3,문화:3|상상,전설,동양|h:동물",
+"공룡|동물:3,과학:2|화석,멸종,거대함|c:화석",
+"낙타|동물:4|사막,혹|c:사막;h:동물",
+"박쥐|동물:4|동굴,밤,날개|c:동굴;h:동물",
+"오리|동물:4,물:2|연못,수영,날개|c:연못;h:동물",
+"병아리|동물:4|닭,알,노란색|c:닭;h:동물",
+"화석|과학:3,자연:2|공룡,발굴,돌|c:공룡",
+"장미|식물:5|꽃,가시,향기,빨간색|c:꽃;h:식물",
+"해바라기|식물:4|꽃,해,노란색,씨|c:꽃;h:식물",
+"잎|식물:4|나무,초록,가을|c:나무;h:식물",
+"뿌리|식물:3|나무,땅,물|c:나무;h:식물",
+"씨앗|식물:3|뿌리,심기,열매|c:열매;h:식물",
+"열매|식물:3,음식:2|과일,씨앗,수확|h:식물",
+"정원|장소:4,식물:3|꽃,마당,가꿈|c:꽃;h:장소",
+"화분|식물:3,도구:2|흙,꽃,실내|c:꽃;h:도구",
+"선인장|식물:4|사막,가시,물|c:사막;h:식물",
+"대나무|식물:4|줄기,숲,초록|h:식물",
+"소나무|식물:4|잎,숲,겨울|c:숲;h:식물",
+"단풍|식물:2,시간:2|가을,나뭇잎,붉은색|c:가을",
+"연못|장소:3,물:3,자연:3|물,개구리,오리|c:개구리",
+"축사|장소:3,동물:2|소,돼지,냄새|c:소",
+"목장|장소:3,동물:3|소,말,초원|c:소",
+"수족관|장소:3,동물:2|물고기,유리,구경|c:물고기",
+"밥|음식:5|쌀,끼니,밥상,공기|c:쌀;h:음식",
+"쌀|음식:4|밥,쌀알,농사|c:밥;h:음식",
+"김치|음식:5|고추,발효,배추,매움|c:배추;h:음식",
+"국|음식:4|국물,밥,끓임|c:밥;h:음식",
+"찌개|음식:4|국물,김치,끓임|c:국;h:음식",
+"라면|음식:4|면,국물,간식,매움|h:음식",
+"국수|음식:4|면,국물|c:라면;h:음식",
+"빵|음식:4|밀가루,베이커리,아침|h:음식",
+"떡|음식:4|쌀,명절,찹쌀|c:명절;h:음식",
+"과자|음식:4|단맛,간식,봉지|h:음식",
+"초콜릿|음식:4|달콤,카카오,선물|h:음식",
+"사탕|음식:4|단맛,알사탕,어린이|c:과자;h:음식",
+"아이스크림|음식:4|차가움,달콤,여름|c:여름;h:음식",
+"커피|음식:4|카페인,쓴맛,카페,아침|c:카페;h:음식",
+"차|음식:4|녹차,따뜻함,다도,운전,도로|c:녹차;h:음식;p:1",
+"녹차|음식:4|차,향,잎|c:차;h:음식",
+"우유|음식:4|소,하얀색,아침|c:소;h:음식",
+"주스|음식:4|과일,음료,달콤|c:과일;h:음식",
+"맥주|음식:4|술,거품,치킨|c:술;h:음식",
+"소주|음식:4|술,병,안주|c:술;h:음식",
+"와인|음식:4|포도,술,잔|c:포도;h:음식",
+"고기|음식:5|소고기,구이,단백질|h:음식",
+"소고기|음식:4|고기,한우,구이|c:고기;h:음식",
+"돼지고기|음식:4|삼겹살,고기,구이|c:고기;h:음식",
+"닭고기|음식:4|치킨,고기|c:고기;h:음식",
+"생선|음식:4,동물:2|물고기,회,구이|c:물고기;h:음식",
+"회|음식:4|생선,날것,초장|c:생선;h:음식",
+"계란|음식:4|닭,노란자,후라이|c:닭;h:음식",
+"두부|음식:4|콩,부드러움,찌개|c:찌개;h:음식",
+"채소|음식:4|초록,건강,샐러드|c:샐러드;h:음식",
+"과일|음식:4|사과,달콤,비타민|h:음식",
+"사과|음식:4|과일,빨간색,아삭함|c:과일;h:음식",
+"배|음식:4|과일,시원함,추석,아랫배,소화,항구,선원|c:과일;h:음식;p:1",
+"포도|음식:4|과일,송이,와인|c:과일;h:음식",
+"딸기|음식:4|과일,빨간색,봄|c:과일;h:음식",
+"수박|음식:4|과일,여름,씨|c:과일;h:음식",
+"바나나|음식:4|과일,노란색,껍질|c:과일;h:음식",
+"귤|음식:4|과일,겨울,껍질|c:과일;h:음식",
+"감자|음식:4|뿌리,탄수화물,튀김|h:음식",
+"고구마|음식:4|뿌리,달콤,겨울|c:감자;h:음식",
+"양파|음식:4|매움,눈물,채소|c:채소;h:음식",
+"마늘|음식:4|향,매움,양념|c:양념;h:음식",
+"고추|음식:4|매움,빨간색,양념|c:양념;h:음식",
+"소금|음식:3|짠맛,바다,양념|c:바다;h:음식",
+"설탕|음식:3|단맛,양념,하얀색|a:소금;h:음식",
+"양념|음식:4|소금,고추,간|c:소금",
+"후추|음식:3|향,매움,양념|s:고추;h:음식",
+"기름|음식:3|튀김,미끄러움,요리|h:음식",
+"간장|음식:3|콩,짠맛,양념|h:음식",
+"된장|음식:3|콩,발효,찌개|c:찌개;h:음식",
+"고추장|음식:3|고추,발효,매움|c:고추;h:음식",
+"김|음식:3|바다,구이,밥|c:밥;h:음식",
+"미역|음식:3|바다,국,끈적임|c:국;h:음식",
+"잡채|음식:3|당면,채소,잔치|c:당면",
+"당면|음식:3|잡채,면|h:음식",
+"비빔밥|음식:4|밥,고추장,채소|c:밥;h:음식",
+"불고기|음식:4|소고기,양념,구이|c:소고기;h:음식",
+"삼겹살|음식:4|돼지고기,구이,술|c:돼지고기;h:음식",
+"치킨|음식:4|닭고기,튀김,맥주|c:닭고기;h:음식",
+"피자|음식:4|치즈,빵,이탈리아|c:치즈;h:음식",
+"햄버거|음식:4|빵,고기,패스트푸드|c:빵;h:음식",
+"김밥|음식:4|밥,김,소풍|c:밥;h:음식",
+"떡볶이|음식:4|떡,고추장,매움|c:떡;h:음식",
+"만두|음식:4|밀가루,고기,찜|c:고기;h:음식",
+"죽|음식:3|쌀,부드러움,아픔|h:음식",
+"샐러드|음식:4|채소,건강,드레싱|c:채소;h:음식",
+"케이크|음식:4|달콤,생일,크림|c:생일;h:음식",
+"쿠키|음식:4|과자,달콤,구움|s:과자;h:음식",
+"간식|음식:4|과자,출출함,간단|h:음식",
+"반찬|음식:4|밥,김치,접시|c:밥;h:음식",
+"음료|음식:3|주스,물,마시다|c:물;h:음식",
+"술|음식:4|소주,맥주,취함|c:소주;h:음식",
+"배추|음식:3,식물:2|김치,채소|c:김치;h:음식",
+"치즈|음식:4|우유,발효,피자|c:피자;h:음식",
+"우동|음식:3|면,국물|c:국수;h:음식",
+"튀김|음식:3|기름,바삭함|c:기름;h:음식",
+"생일|시간:3,문화:3|케이크,축하,선물|c:케이크",
+"떡국|음식:3|떡,국,설날|c:떡;h:음식",
+"사람|사람:5,사회:3|인간,얼굴,이성,사회|c:인간;h:사람",
+"인간|사람:5|사람,이성,감정,사회|s:사람",
+"남자|사람:5|아버지,형,수염,힘|a:여자",
+"여자|사람:5|어머니,누나,치마,섬세함|a:남자",
+"아이|사람:5|어린이,놀이,학교|a:어른",
+"어른|사람:5|성인,책임,아이|a:아이",
+"어린이|사람:4|아이,놀이,학교|s:아이",
+"노인|사람:4|나이,할아버지,지혜|a:청년",
+"청년|사람:4|젊음,대학,에너지|a:노인",
+"아기|사람:4|젖,울음,귀여움|a:노인",
+"친구|사람:5,사회:3|우정,동창,만남|c:우정;h:사람",
+"가족|사람:5,사회:3|부모,자녀,집,사랑|c:집;h:사회",
+"부모|사람:4|아버지,어머니,자녀|c:자녀;h:가족",
+"자녀|사람:4|아들,딸,부모|c:부모;h:가족",
+"아버지|사람:4|아빠,가족,가장|c:가족;h:부모",
+"어머니|사람:4|엄마,가족,정|c:가족;h:부모",
+"엄마|사람:4|어머니,아이,정|s:어머니;h:부모",
+"아빠|사람:4|아버지,아이|s:아버지;h:부모",
+"아들|사람:4|자녀,아이,가족|c:자녀;h:자녀",
+"딸|사람:4|자녀,아이,가족|c:자녀;h:자녀",
+"형|사람:3|형제,나이,가족|c:가족;h:가족",
+"누나|사람:3|형제,나이,가족|c:가족;h:가족",
+"동생|사람:3|형제,나이,가족|c:가족;h:가족",
+"할머니|사람:4|노인,가족,손자|c:가족;h:가족",
+"할아버지|사람:4|노인,가족,손자|c:가족;h:가족",
+"손자|사람:3|할머니,가족|h:가족",
+"이웃|사람:3,사회:3|옆집,인사,동네|c:동네;h:사람",
+"주인|사람:3,사회:2|소유,가게|a:손님;h:사람",
+"손님|사람:3,사회:3|방문,가게,접대|a:주인;h:사람",
+"사장|사람:3,경제:3|회사,직원,사업|c:회사;h:사람",
+"직원|사람:3,경제:3|회사,월급,사장|c:회사;h:사람",
+"선생님|사람:3,교육:4|학교,학생,수업|c:학교;h:사람",
+"학생|사람:3,교육:4|학교,공부,시험|c:학교;h:사람",
+"의사|사람:3,의료:4|병원,진료,환자|c:병원;h:사람",
+"환자|사람:3,의료:4|병원,치료,아픔|c:병원;h:사람",
+"경찰|사람:3,법:4|순찰,범죄,수갑|c:범죄;h:사람",
+"군인|사람:3,군사:4|군대,훈련,전쟁|c:군대;h:사람",
+"가수|사람:3,예술:4|노래,무대,팬|c:노래;h:사람",
+"배우|사람:3,예술:4|연기,영화,무대|c:영화;h:사람",
+"작가|사람:3,예술:3|글,책,소설|c:책;h:사람",
+"화가|사람:3,예술:4|그림,붓,미술관|c:그림;h:사람",
+"요리사|사람:3,음식:4|부엌,음식,칼|c:부엌;h:사람",
+"농부|사람:3,자연:2|농사,밭,수확|c:농사;h:사람",
+"신부|사람:3,문화:2|결혼식,드레스|c:결혼식;h:사람",
+"신랑|사람:3,문화:2|결혼식,정장|c:결혼식;h:사람",
+"아내|사람:4|부부,결혼,가족|c:부부;h:가족",
+"남편|사람:4|부부,결혼,가족|c:부부;h:가족",
+"부부|사람:4,사회:3|아내,남편,결혼|c:결혼",
+"연인|사람:4,감정:3|사랑,데이트,애인|c:사랑;h:사람",
+"애인|사람:4,감정:3|연인,사랑|s:연인;h:사람",
+"몸|신체:5|건강,근육,움직임|c:건강",
+"머리|신체:5|머리카락,생각,얼굴|c:얼굴;h:신체;p:1",
+"얼굴|신체:5|눈,코,입,표정|c:표정;h:신체",
+"코|신체:5|냄새,얼굴,숨|c:얼굴;h:신체",
+"입|신체:5|말,음식,입술|c:얼굴;h:신체",
+"귀|신체:5|소리,듣기,얼굴|c:얼굴;h:신체",
+"손|신체:5|손가락,악수,일|c:손가락;h:신체",
+"발|신체:5|발가락,걷기,신발|c:신발;h:신체",
+"팔|신체:4|어깨,손,힘|c:어깨;h:신체",
+"다리|신체:4,건축:3,이동:2|걷기,무릎,허벅지,강,건너기,아치|c:강;h:신체;p:1",
+"무릎|신체:4|다리,관절|c:다리;h:신체",
+"어깨|신체:4|팔,근육,피로|c:팔;h:신체",
+"가슴|신체:4|심장,숨,감동|c:심장;h:신체",
+"등|신체:4|허리,척추|h:신체",
+"허리|신체:4|등,통증,자세|c:등;h:신체",
+"손가락|신체:4|손,지문,반지|c:손;h:신체",
+"발가락|신체:4|발,양말|c:발;h:신체",
+"심장|신체:4,의료:3|가슴,박동,피|c:가슴;h:신체",
+"뇌|신체:4,과학:3|머리,생각,신경|c:머리;h:신체",
+"피|신체:4|붉은색,상처,순환|c:상처;h:신체",
+"뼈|신체:4|골격,칼슘|c:몸;h:신체",
+"살|신체:4|피부,근육,지방|c:피부;h:신체",
+"피부|신체:4|살,건조,햇볕|c:살;h:신체",
+"머리카락|신체:4|머리,미용실,검은색|c:미용실;h:신체",
+"이빨|신체:4|입,치과,씹기|c:치과;h:신체",
+"혀|신체:3|입,맛|c:입;h:신체",
+"목|신체:4|목소리,침,울림|h:신체",
+"근육|신체:4,스포츠:2|운동,힘,단련|c:운동;h:신체",
+"표정|신체:3,감정:3|얼굴,웃음,감정|c:얼굴",
+"상처|신체:4,의료:2|피,아픔,치료|c:피",
+"통증|의료:4,신체:3|아픔,진통제,병원|c:병원",
+"아픔|의료:3,신체:3|통증,병원,슬픔|c:통증",
+"치과|장소:3,의료:4|이빨,충치,진료|c:이빨",
+"미용실|장소:3|머리카락,커트,거울|c:머리카락",
+"사랑|감정:5|마음,연인,설렘,헌신|c:연인;c:마음;h:감정;a:증오",
+"애정|감정:5|사랑,정,친밀|c:사랑;h:감정",
+"정|감정:4|사랑,정서,그리움|c:사랑;h:감정",
+"우정|감정:4,사회:3|친구,신뢰,의리|c:친구;h:감정",
+"증오|감정:5|미움,분노,원한|c:미움;h:감정;a:사랑",
+"미움|감정:4|증오,원한,적|c:증오;h:감정",
+"분노|감정:5|화,폭발,소리|c:화;h:감정",
+"화|감정:4|분노,짜증,고함|s:분노;h:감정",
+"짜증|감정:4|화,귀찮음,불만|c:화;h:감정",
+"슬픔|감정:5|눈물,상실,우울|c:눈물;h:감정;a:기쁨",
+"눈물|감정:3,신체:2|슬픔,울음,그리움|c:슬픔",
+"기쁨|감정:5|웃음,행복,즐거움|c:웃음;h:감정;a:슬픔",
+"행복|감정:5|기쁨,만족,웃음|c:기쁨;h:감정",
+"즐거움|감정:4|재미,기쁨,놀이|c:재미;h:감정",
+"재미|감정:3,놀이:3|즐거움,취미,놀이|c:즐거움",
+"웃음|감정:3|기쁨,농담,소리|c:기쁨",
+"두려움|감정:5|공포,무서움,회피|s:공포;h:감정",
+"공포|감정:5|두려움,무서움,영화|s:두려움;h:감정",
+"무서움|감정:4|두려움,어둠,위험|s:공포;h:감정",
+"불안|감정:4|걱정,초조,긴장|c:걱정;h:감정",
+"걱정|감정:4|불안,근심,고민|c:불안;h:감정",
+"고민|사고:4,감정:2|걱정,생각,문제|c:걱정",
+"스트레스|감정:4,의료:2|긴장,피로,압박|c:피로;h:감정",
+"외로움|감정:4|고독,혼자,그리움|s:고독;h:감정",
+"고독|감정:4|외로움,혼자,적막|s:외로움;h:감정",
+"그리움|감정:4|보고싶음,추억,외로움|c:추억;h:감정",
+"설렘|감정:4|두근거림,기대,사랑|c:기대;h:감정",
+"질투|감정:4|시기,부러움,연인|c:부러움;h:감정",
+"시기|감정:3|질투,부러움|s:질투;h:감정",
+"부러움|감정:4|질투,동경|h:감정",
+"자존심|감정:3,사고:3|자부심,체면,긍지|c:자부심;h:감정",
+"자부심|감정:3|자존심,성취,긍지|c:자존심;h:감정",
+"수치심|감정:4|부끄러움,죄책감,얼굴|c:부끄러움;h:감정",
+"부끄러움|감정:4|수치심,얼굴,홍조|s:수치심;h:감정",
+"죄책감|감정:4|후회,양심,잘못|c:후회;h:감정",
+"후회|감정:4|죄책감,과거,아쉬움|c:죄책감;h:감정",
+"원한|감정:4|복수,미움,앙금|c:복수;h:감정",
+"복수|감정:3,사회:3|원한,응징,보복|c:원한;h:감정",
+"용서|감정:3|관용,화해,마음|c:화해;h:감정",
+"화해|감정:3,사회:3|용서,사과,관계|c:용서",
+"감사|감정:4|고마움,인사,마음|c:고마움;h:감정",
+"고마움|감정:4|감사,마음|s:감사;h:감정",
+"희망|감정:3,사고:3|기대,밝음,미래|c:기대;h:감정;a:절망",
+"절망|감정:4|좌절,어둠,포기|c:좌절;h:감정;a:희망",
+"실망|감정:4|기대,아쉬움,낙담|c:기대;h:감정",
+"기대|감정:4,사고:2|설렘,희망,예상|c:희망;h:감정",
+"만족|감정:4|충족,행복,흡족|c:행복;h:감정",
+"욕망|감정:3,사고:3|욕심,충동,갈망|c:욕심;h:감정",
+"욕심|감정:3|욕망,탐욕,많음|c:욕망;h:감정",
+"탐욕|감정:3|욕심,돈,탐내다|c:돈;h:감정",
+"안도|감정:3|안심,긴장,한숨|c:안심;h:감정",
+"안심|감정:3|안도,편안함|s:안도;h:감정",
+"평온|감정:3|고요,안정,마음|c:고요;h:감정",
+"권태|감정:3|지루함,무기력|c:지루함;h:감정",
+"지루함|감정:3|권태,심심함|s:권태;h:감정",
+"흥분|감정:3|설렘,열정,소리|c:설렘;h:감정",
+"열정|감정:3,사고:2|흥분,의욕,몰입|c:흥분;h:감정",
+"억울함|감정:4|분함,부당,눈물|c:분노;h:감정",
+"분함|감정:3|억울함,화|c:억울함;h:감정",
+"편안함|감정:3|안심,휴식,평온|c:휴식;h:감정",
+"호기심|감정:3,사고:3|궁금,탐구,질문|c:질문;h:감정",
+"감동|감정:4|눈물,마음,영화|c:눈물;h:감정",
+"좌절|감정:4|실패,절망,포기|c:실패;h:감정",
+"울음|감정:3|눈물,슬픔,소리|c:눈물;h:감정",
+"생각|사고:5|머리,아이디어,고민|c:머리;h:사고",
+"마음|사고:4,감정:4|감정,생각,마음속|c:감정;h:사고",
+"기억|사고:4|추억,뇌,잊음|c:추억;h:사고",
+"추억|사고:4,시간:2|기억,과거,그리움|c:기억;h:사고",
+"꿈|사고:4,시간:2|잠,소망,이상|h:사고;p:1",
+"상상|사고:4|공상,창의,머리|c:공상;h:사고",
+"공상|사고:3|상상,허구|s:상상;h:사고",
+"논리|사고:4,과학:2|이성,추론,증명|c:이성;h:사고",
+"이성|사고:4|논리,판단,감성|c:논리;h:사고;a:감성",
+"감성|사고:3,감정:3|감정,직관,예술|c:감정;h:사고;a:이성",
+"직관|사고:4|감,즉각,판단|c:감성;h:사고",
+"지식|사고:4,교육:3|공부,배움,정보|c:공부;h:사고",
+"지혜|사고:4|경험,판단,노인|c:경험;h:사고",
+"정보|사고:3,미디어:3|지식,데이터,뉴스|c:지식",
+"진실|사고:4,사회:2|사실,거짓,정직|a:거짓;h:사고",
+"거짓|사고:3|거짓말,속임,진실|c:거짓말;a:진실;h:사고",
+"거짓말|사고:3,사회:2|거짓,속임,말|c:거짓",
+"정의|사회:4,사고:4|공정,법,옳음|c:공정;h:사고",
+"자유|사회:4,사고:4|해방,권리,구속|a:구속;h:사고",
+"평화|사회:4|전쟁,고요,휴전|a:전쟁;h:사고",
+"행운|사고:3|운,복,우연|c:운;h:사고",
+"운|사고:2|행운,불운,우연|c:행운",
+"불운|사고:2|재수없음,사고|c:행운",
+"운명|사고:4|숙명,인생,정해짐|c:인생;h:사고",
+"인생|사고:4,시간:3|삶,여정,죽음|c:삶;h:사고",
+"삶|사고:3|인생,살아감|c:인생;h:사고",
+"죽음|사고:4|장례식,상실,끝|c:장례식;h:사고;a:삶",
+"탄생|사고:3,시간:2|출생,아기,시작|c:아기;h:사고;a:죽음",
+"시간|시간:5|시계,흐름,현재|c:시계",
+"과거|시간:4|추억,기억,옛날|c:추억;h:시간",
+"미래|시간:4|앞날,계획,희망|c:희망;h:시간",
+"현재|시간:4|지금,순간|c:지금;h:시간",
+"영원|시간:3,사고:2|무한,영구|c:무한",
+"침묵|사고:2,문화:2|고요,말없음,어색|c:고요",
+"소리|과학:3,문화:3|음파,시끄러움,귀|c:귀",
+"말|사고:4,문화:3|언어,대화,입|c:대화;h:사고;p:1",
+"언어|사고:4,문화:4|말,문자,번역|c:말;h:사고",
+"글|문화:3,사고:3|문장,쓰기,책|c:책",
+"숫자|사고:3,과학:3|수학,계산,기호|c:수학",
+"의미|사고:4|뜻,해석,언어|c:언어;h:사고",
+"질문|사고:4|물음,대답,궁금|c:대답;h:사고",
+"대답|사고:3|질문,응답|c:질문;h:사고",
+"비밀|사회:3,사고:3|숨김,약속,들키다|c:약속;h:사고",
+"약속|사회:4|신뢰,시간,만남|c:신뢰;h:사회",
+"신뢰|사회:4,감정:3|믿음,신용,의리|c:믿음;h:사회",
+"믿음|감정:3,사고:3|신뢰,종교,확신|s:신뢰;h:사고",
+"의심|사고:3|의혹,불신,질문|c:질문;h:사고",
+"선택|사고:4|결정,갈림길,고민|c:결정;h:사고",
+"결정|사고:4|선택,판단,결론|c:선택;h:사고",
+"습관|사고:3,시간:2|반복,버릇,루틴|c:반복",
+"노력|사고:4|수고,성취,연습|c:연습;h:사고",
+"성공|사회:3,사고:3|성취,목표,승리|c:목표;h:사고;a:실패",
+"실패|사회:3,사고:3|좌절,패배,재도전|c:좌절;h:사고;a:성공",
+"목표|사고:4|계획,성취,방향|c:계획;h:사고",
+"계획|사고:4,시간:2|목표,일정,준비|c:목표;h:사고",
+"경험|사고:4|체험,노하우,과거|c:체험;h:사고",
+"체험|사고:3|경험,현장|c:경험",
+"배움|교육:4,사고:3|공부,지식,성장|s:공부;h:교육",
+"철학|사고:4,교육:3|사유,질문,학문|c:질문;h:사고",
+"종교|사회:4,문화:4|신,믿음,절|c:신;h:사회",
+"신|종교:5|믿음,기도,절|c:종교",
+"영혼|종교:4,사고:3|정신,죽음,마음|c:정신",
+"정신|사고:4,의료:2|마음,영혼,건강|c:마음;h:사고",
+"양심|사고:3,감정:3|죄책감,도덕,옳음|c:죄책감",
+"도덕|사회:4,사고:3|윤리,양심,규범|c:양심",
+"정서|감정:3|감정,마음|c:감정",
+"아이디어|사고:4|생각,창의,발상|c:생각",
+"창의|사고:3|상상,아이디어|c:아이디어",
+"문제|사고:3|질문,고민,해결|c:질문",
+"해결|사고:3|문제,답,정리|c:문제",
+"판단|사고:4|결정,이성,평가|c:결정",
+"평가|사고:3|판단,점수,검토|c:판단",
+"실수|사고:2|잘못,후회,경험|c:후회",
+"잘못|사고:2|실수,죄책감|c:실수",
+"규범|사회:3|규칙,도덕|s:규칙",
+"무한|사고:2,과학:2|영원,끝없음|c:영원",
+"회사|사회:4,경제:4|직장,사장,직원,출근|c:직장;h:사회",
+"직장|사회:4,경제:3|회사,출근,월급|c:회사;h:사회",
+"사업|경제:5|회사,창업,이익|c:회사;h:경제",
+"창업|경제:4|사업,스타트업,도전|c:사업;h:경제",
+"스타트업|경제:3|창업,투자,벤처|c:창업",
+"돈|경제:5|월급,지갑,은행,부자|c:월급;h:경제",
+"월급|경제:4|돈,직장,봉급|c:돈;h:경제",
+"가격|경제:4|돈,시장,비싸다|c:돈;h:경제",
+"시장|경제:4,장소:3|물건,상인,가격|c:가격;h:경제",
+"은행|경제:5,장소:3|돈,예금,대출|c:돈;h:경제",
+"예금|경제:4|은행,이자,저축|c:은행;h:경제",
+"저축|경제:4|예금,돈,모음|c:예금;h:경제",
+"대출|경제:4|은행,이자,빚|c:은행;c:빚;h:경제",
+"빚|경제:4|대출,이자,독촉|c:대출;h:경제",
+"이자|경제:4|은행,이율,대출|c:은행;h:경제",
+"카드|경제:4|결제,신용,지갑|c:결제;h:경제",
+"결제|경제:4|카드,돈,계산|c:카드;h:경제",
+"세금|경제:4,법:3|신고,국세,공과금|c:국세;h:경제",
+"국세|경제:3,법:3|세금,신고|c:세금;h:경제",
+"투자|경제:5|주식,수익,위험|c:주식;h:경제",
+"주식|경제:5|투자,증시,차트|c:투자;h:경제",
+"증시|경제:4|주식,지수,상승|s:주식;h:경제",
+"부동산|경제:5|집,아파트,매매|c:집;h:경제",
+"경매|경제:4,법:3|부동산,입찰,낙찰|c:부동산;h:경제",
+"보험|경제:4|보장,계약,병원|c:계약;h:경제",
+"계약|사회:4,경제:3,법:3|서명,약속,조건|c:약속;h:사회",
+"서명|사회:2|계약,이름,펜|c:계약",
+"회의|사회:4,경제:3|회사,회의실,안건|c:회사;h:사회",
+"보고서|경제:3,사회:3|회의,문서,정리|c:회의",
+"영업|경제:4|고객,판매,실적|c:고객;h:경제",
+"마케팅|경제:4|광고,고객,브랜드|c:광고;h:경제",
+"광고|경제:3,미디어:4|마케팅,홍보,방송|c:마케팅;h:미디어",
+"고객|경제:4|손님,구매,서비스|c:손님;h:경제",
+"브랜드|경제:3,미디어:3|로고,이미지,광고|c:광고",
+"뉴스|미디어:5|신문,보도,방송|c:신문;h:미디어",
+"신문|미디어:5|뉴스,지면,구독|c:뉴스;h:미디어",
+"방송|미디어:5|텔레비전,뉴스,전파|c:텔레비전;h:미디어",
+"인터넷|기술:5,미디어:3|네트워크,웹,검색|c:네트워크;h:기술",
+"정치|정치:5,사회:3|국회,선거,대통령|c:국회;h:사회",
+"대통령|정치:5|선거,국회,권력|c:선거;h:정치",
+"국회|정치:5|법,의원,회의|c:법;h:정치",
+"선거|정치:5|투표,후보,대통령|c:투표;h:정치",
+"투표|정치:4|선거,용지,개표|c:선거;h:정치",
+"법|법:5,정치:3|재판,규칙,정의|c:재판;h:법",
+"재판|법:5|법원,판사,판결|c:법원;h:법",
+"판결|법:5|재판,판사,선고|c:재판;h:법",
+"판사|법:4|재판,법복|c:재판",
+"법원|법:5,장소:3|재판,판사|c:재판;h:법",
+"경찰서|장소:3,법:4|경찰,신고|c:경찰;h:장소",
+"범죄|법:5|경찰,감옥,피해|c:경찰;h:법",
+"감옥|법:4,장소:4|수감,죄수,철창|c:범죄;h:장소",
+"군대|군사:5|군인,훈련,입대|c:군인;h:군사",
+"전쟁|군사:5|총,폭격,평화|c:군대;h:군사;a:평화",
+"총|군사:5,도구:2|전쟁,총알,위험|c:전쟁;h:군사",
+"시민|사회:4,정치:3|사회,권리,도시|c:사회",
+"사회|사회:5|사람,공동체,규칙|c:공동체;h:사회",
+"공동체|사회:4|사회,연대,마을|c:사회",
+"규칙|사회:4|법,질서,지킴|c:질서;h:사회",
+"질서|사회:4|규칙,정리,안정|c:규칙;h:사회",
+"권리|사회:4,법:3|자유,보장,시민|c:자유;h:사회",
+"의무|사회:4|책임,규칙,국방|c:규칙;a:권리;h:사회",
+"책임|사회:4|의무,부담,맡음|c:의무;h:사회",
+"인구|사회:3,경제:2|사람,통계,도시|c:통계;h:사회",
+"통계|과학:3,경제:3|숫자,자료,분석|c:숫자",
+"자료|사고:2,경제:2|문서,데이터,정리|c:데이터",
+"데이터|기술:3,과학:3|정보,분석,숫자|c:정보",
+"분석|사고:3,과학:3|데이터,검토|c:데이터",
+"이익|경제:4|수익,돈,장사|c:수익;h:경제",
+"수익|경제:4|이익,돈|s:이익;h:경제",
+"손해|경제:4|손실,적자|c:손실;a:이익;h:경제",
+"손실|경제:4|손해,적자|s:손해;h:경제",
+"적자|경제:3|손실,빚|c:손실;h:경제",
+"거래|경제:4|매매,계약,돈|c:계약;h:경제",
+"매매|경제:4|거래,부동산|c:거래;h:경제",
+"물건|경제:3|상품,사다,가게|c:상품",
+"상품|경제:4|물건,가격,판매|c:물건;h:경제",
+"판매|경제:4|상품,고객,매출|c:상품;h:경제",
+"매출|경제:4|판매,실적,돈|c:판매;h:경제",
+"사무실|장소:4,경제:2|회사,책상,업무|c:회사;h:장소",
+"출근|경제:3|직장,아침,회사|c:직장",
+"휴가|시간:3,경제:2|여행,쉼,회사|c:여행",
+"부자|경제:3,사람:3|돈,재산,호화|c:돈",
+"가난|경제:3|돈,어려움,빈곤|a:부자",
+"재산|경제:4|돈,부동산,자산|c:돈",
+"자산|경제:4|재산,돈,투자|c:재산",
+"음악|예술:5|노래,악기,소리|c:노래;h:예술",
+"노래|예술:5|음악,가수,목소리|c:음악;h:예술",
+"악기|예술:4,도구:2|기타,피아노,연주|c:기타;h:예술",
+"기타|예술:4,도구:2|줄,연주,소리|c:연주;h:악기",
+"피아노|예술:4,도구:2|건반,연주,클래식|c:연주;h:악기",
+"드럼|예술:3,도구:2|리듬,연주|c:연주;h:악기",
+"연주|예술:4|악기,무대,소리|c:악기;h:예술",
+"그림|예술:5|화가,붓,미술관|c:화가;h:예술",
+"미술|예술:5|그림,조각,전시|c:그림;h:예술",
+"미술관|장소:4,예술:4|그림,전시,관람|c:그림;h:장소",
+"영화|예술:5,미디어:3|배우,극장,상영|c:배우;h:예술",
+"배우|사람:3,예술:4|연기,영화,무대|c:영화;h:사람",
+"드라마|예술:4,미디어:4|방송,배우,연속|c:방송;h:예술",
+"소설|예술:4,문화:4|책,작가,이야기|c:책;h:예술",
+"시|예술:4,문화:3|시인,운율,감정|c:소설;h:예술",
+"책|문화:5|독서,서점,종이|c:독서;h:문화",
+"독서|문화:3,사고:3|책,공부,조용|c:책",
+"도서관|장소:4,문화:4|책,조용,대출|c:책;h:장소",
+"서점|장소:4,문화:3|책,구매|c:책;h:장소",
+"만화|문화:4,예술:3|그림,캐릭터,재미|c:그림;h:문화",
+"게임|놀이:5,기술:3|재미,컴퓨터,승부|c:재미;h:놀이",
+"퍼즐|놀이:4|조각,문제,맞추기|c:문제;h:놀이",
+"바둑|놀이:4|돌,판,집|c:돌;h:놀이",
+"장기|놀이:4|말,판,한수|h:놀이;p:1",
+"체스|놀이:4|말,판,전략|h:놀이",
+"카드게임|놀이:4|카드,패,승부|c:카드;h:놀이",
+"놀이|놀이:4|재미,아이,놀이터|c:재미",
+"축제|문화:5,놀이:3|축하,공연,먹거리|c:공연;h:문화",
+"파티|문화:4,놀이:3|축하,사람,음악|c:축제;h:문화",
+"여행|이동:4,놀이:4|비행기,호텔,구경|c:비행기;h:놀이",
+"사진|문화:4,기술:2|카메라,찍기,추억|c:카메라;h:문화",
+"카메라|기술:3,도구:4|사진,렌즈,찍기|c:사진;h:도구",
+"춤|예술:4|몸,음악,무대|c:음악;h:예술",
+"발레|예술:4|춤,발끝,무대|c:춤;h:예술",
+"공연|예술:5|무대,관객,노래|c:무대;h:예술",
+"무대|예술:3,장소:3|공연,조명,배우|c:공연",
+"연극|예술:4|무대,배우,대사|c:배우;h:예술",
+"콘서트|예술:4,놀이:3|공연,가수,관객|c:공연;h:예술",
+"관객|문화:3|공연,좌석,박수|c:공연",
+"박수|문화:2|관객,칭찬,소리|c:관객",
+"전시|문화:4,예술:3|미술관,관람|c:미술관",
+"조각|예술:3|돌,미술,작품|c:미술",
+"작품|예술:4|그림,창작,전시|c:전시",
+"이야기|문화:4|소설,말,재미|c:소설",
+"명절|문화:4,시간:3|떡,가족,차례|c:떡",
+"결혼식|문화:4|신랑,신부,축하|c:신부",
+"장례식|문화:3|죽음,조문,검은옷|c:죽음",
+"선물|문화:3,경제:2|생일,포장,감사|c:생일",
+"축하|문화:3|파티,박수,선물|c:파티",
+"축구|스포츠:5|공,골대,경기장|c:공;h:스포츠",
+"야구|스포츠:5|공,배트,경기장|c:공;h:스포츠",
+"농구|스포츠:5|공,골대,농구장|c:공;h:스포츠",
+"배구|스포츠:5|공,네트|h:스포츠",
+"수영|스포츠:5,물:4|수영장,물,자유형|c:수영장;h:스포츠",
+"마라톤|스포츠:5|달리기,체력,코스|c:달리기;h:스포츠",
+"달리기|스포츠:4|빠름,운동,트랙|c:운동;h:스포츠",
+"테니스|스포츠:5|라켓,공,코트|c:라켓;h:스포츠",
+"골프|스포츠:5|클럽,공,필드|c:공;h:스포츠",
+"태권도|스포츠:5|도장,발차기,유단자|c:도장;h:스포츠",
+"유도|스포츠:4|도장,매치기,일본|c:도장;h:스포츠",
+"복싱|스포츠:4|글러브,링,펀치|h:스포츠",
+"씨름|스포츠:4|한국,모래판,힘|c:힘;h:스포츠",
+"등산|스포츠:4,자연:3|산,정상,배낭|c:산;h:스포츠",
+"낚시|스포츠:3,놀이:3|물고기,강,릴|c:물고기;h:놀이",
+"자전거|스포츠:3,이동:4|페달,바퀴,길|c:바퀴;h:이동",
+"스키|스포츠:4|눈,슬로프,겨울|c:눈;h:스포츠",
+"스케이트|스포츠:4|얼음,날,겨울|c:얼음;h:스포츠",
+"볼링|스포츠:4|핀,공,레인|c:공;h:스포츠",
+"배드민턴|스포츠:4|라켓,셔틀콕|c:라켓;h:스포츠",
+"탁구|스포츠:4|라켓,공,탁구대|c:라켓;h:스포츠",
+"운동|스포츠:5|건강,땀,체력|c:건강;h:스포츠",
+"경기|스포츠:4|승부,선수,관중|c:선수;h:스포츠",
+"선수|사람:3,스포츠:4|경기,훈련,유니폼|c:경기;h:스포츠",
+"코치|사람:3,스포츠:4|훈련,지도,선수|c:선수",
+"응원|스포츠:3|함성,관중,팀|c:경기",
+"승리|스포츠:4|이김,기쁨,경기|c:경기;a:패배",
+"패배|스포츠:4|짐,아쉬움,경기|c:경기;a:승리",
+"라켓|도구:4,스포츠:3|테니스,공|c:테니스;h:도구",
+"공|도구:4,스포츠:4|둥글다,차다,경기|c:경기;h:도구",
+"골대|도구:3,스포츠:3|축구,골|c:축구",
+"수영장|장소:4,스포츠:4|물,수영,레인|c:수영;h:장소",
+"운동장|장소:4,스포츠:3|달리기,경기,트랙|c:경기;h:장소",
+"경기장|장소:4,스포츠:4|관중,경기|s:운동장;h:장소",
+"도장|장소:3,스포츠:3|태권도,유도,수련|c:태권도",
+"글러브|도구:3,스포츠:2|복싱,손|c:복싱;h:도구",
+"컴퓨터|기술:5,도구:4|모니터,키보드,인터넷|c:키보드;h:기술",
+"노트북|기술:5,도구:4|컴퓨터,휴대,화면|c:컴퓨터;h:기술",
+"스마트폰|기술:5,도구:4|전화,화면,앱|c:전화;h:기술",
+"전화|기술:4,통신:4|벨,통화,번호|c:스마트폰;h:통신",
+"텔레비전|미디어:4,도구:4|화면,방송,리모컨|c:방송;h:도구",
+"라디오|미디어:4,도구:3|주파수,음악,방송|c:방송;h:도구",
+"냉장고|도구:4,음식:2|차가움,보관,얼음|c:음식;h:도구",
+"세탁기|도구:4|빨래,물,회전|c:빨래;h:도구",
+"에어컨|도구:4|시원함,여름,바람|c:여름;h:도구",
+"선풍기|도구:4|바람,여름,날개|c:바람;h:도구",
+"청소기|도구:4|청소,먼지,소리|c:청소;h:도구",
+"전등|도구:4|빛,전기,밝음|c:빛;h:도구",
+"시계|도구:4,시간:3|시간,바늘,손목|c:시간;h:도구",
+"거울|도구:3|비춤,얼굴,유리|h:도구",
+"열쇠|도구:3|문,자물쇠,잠금|c:자물쇠;h:도구",
+"자물쇠|도구:3|열쇠,잠금,안전|c:열쇠;h:도구",
+"가위|도구:4|자르기,날,종이|h:도구",
+"칼|도구:4,음식:2|자르기,날,요리|c:요리;h:도구",
+"망치|도구:4|못,두드림|c:못;h:도구",
+"못|도구:3|망치,벽,고정|c:망치;h:도구",
+"나사|도구:3|돌리기,드라이버|c:드라이버;h:도구",
+"드라이버|도구:3|나사,돌리기|c:나사;h:도구",
+"연필|도구:4|글씨,지우개,나무|c:공책;h:도구",
+"펜|도구:4|글씨,잉크|c:연필;h:도구",
+"공책|도구:3|종이,필기,학교|c:학교;h:도구",
+"가방|도구:4|들다,소지품,어깨|c:소지품;h:도구",
+"우산|도구:4|비,접이식,손|c:비;h:도구",
+"신발|도구:3,패션:4|발,끈,걷기|c:발;h:패션",
+"옷|패션:5|입다,천,스타일|c:천;h:패션",
+"모자|패션:4|머리,챙,햇볕|c:머리;h:패션",
+"안경|패션:3,도구:3|눈,렌즈,시력|c:눈;h:도구",
+"반지|패션:4|손가락,결혼,보석|c:손가락;h:패션",
+"목걸이|패션:4|목,보석|c:반지;h:패션",
+"지갑|패션:3,경제:2|돈,카드,가죽|c:돈",
+"침대|도구:4,장소:2|잠,이불,방|c:잠;h:도구",
+"의자|도구:4|앉다,책상,다리|c:책상;h:도구",
+"책상|도구:4|공부,의자,서랍|c:의자;h:도구",
+"식탁|도구:3|밥,의자,가족|c:밥;h:도구",
+"문|건축:4|열기,방,손잡이|c:방;h:건축",
+"창문|건축:4|유리,빛,바깥|c:방;h:건축",
+"벽|건축:4|집,페인트,막힘|c:집;h:건축",
+"지붕|건축:4|집,비,위|c:집;h:건축",
+"계단|건축:3|오르기,층|c:층;h:건축",
+"엘리베이터|건축:3,기술:3|층,문,오르기|c:계단",
+"바닥|건축:3,공간:3|땅,걷기,청소|c:땅",
+"천장|건축:3|위,지붕,높이|a:바닥",
+"자동차|이동:5,도구:3|운전,바퀴,도로|c:운전;h:이동",
+"버스|이동:5|정류장,승객,노선|c:정류장;h:이동",
+"지하철|이동:5|역,노선,출퇴근|c:역;h:이동",
+"기차|이동:5|철로,역,객차|c:역;h:이동",
+"비행기|이동:5,공간:2|공항,하늘,날개|c:공항;h:이동",
+"선박|이동:4,물:3|배,항구,화물|c:항구;h:이동",
+"항구|장소:4,이동:3|배,바다,화물|c:바다;h:장소",
+"오토바이|이동:4|바퀴,속도,헬멧|c:바퀴;h:이동",
+"바퀴|도구:3,이동:3|자동차,굴림|c:자동차",
+"로켓|기술:4,이동:3|우주,발사,연료|c:우주;h:기술",
+"인공위성|기술:4,공간:3|우주,궤도,통신|c:우주",
+"상자|도구:3|담기,포장,종이|c:포장;h:도구",
+"바구니|도구:3|담기,장보기|c:상자",
+"병|도구:3|유리,담기,뚜껑|c:유리",
+"컵|도구:4|마시다,물,손잡이|c:물;h:도구",
+"접시|도구:4|음식,식탁,둥글|c:음식;h:도구",
+"숟가락|도구:4|밥,젓가락,수저|c:젓가락;h:도구",
+"젓가락|도구:4|밥,숟가락|c:숟가락;h:도구",
+"냄비|도구:4|끓이기,부엌,음식|c:부엌;h:도구",
+"프라이팬|도구:4|기름,부치기,부엌|s:냄비;h:도구",
+"수저|도구:3|숟가락,젓가락|s:숟가락;h:도구",
+"이불|도구:3|잠,따뜻함,침대|c:침대;h:도구",
+"베개|도구:3|잠,머리,침대|c:침대;h:도구",
+"수건|도구:3|목욕,물,닦기|c:목욕;h:도구",
+"비누|도구:3|씻기,거품,목욕|c:목욕;h:도구",
+"칫솔|도구:3|이빨,치약,양치|c:이빨;h:도구",
+"치약|도구:3|칫솔,양치|c:칫솔;h:도구",
+"우표|도구:2|편지,우체국|c:편지",
+"편지|문화:3,통신:3|우표,봉투,손글씨|c:우표",
+"봉투|도구:2|편지,종이|c:편지",
+"종이|도구:3|나무,글,가벼움|c:공책;h:도구",
+"유리|도구:2,건축:3|투명,깨짐,창문|c:창문",
+"천|도구:2,패션:3|옷,실,부드러움|c:옷",
+"실|도구:2|바늘,천,꿰매기|c:천",
+"바늘|도구:2|실,찌르기|c:실",
+"장난감|놀이:4,도구:3|아이,놀이,재미|c:아이;h:놀이",
+"인형|놀이:3,도구:2|아이,봉제,귀여움|c:장난감",
+"풍선|놀이:3|공기,파티,둥글|c:파티",
+"로봇|기술:5|기계,인공지능,자동|c:기계;h:기술",
+"기계|기술:4,도구:4|부품,작동,엔진|c:부품;h:기술",
+"부품|기술:3|기계,조립|c:기계",
+"엔진|기술:4,이동:2|자동차,동력|c:자동차",
+"배터리|기술:4|전기,충전,에너지|c:전기",
+"전기|기술:4,과학:3|전력,콘센트,빛|c:전등",
+"콘센트|도구:2,기술:2|전기,플러그|c:전기",
+"모니터|기술:4,도구:3|화면,컴퓨터|s:화면;h:도구",
+"키보드|기술:3,도구:4|컴퓨터,타자,자판|c:컴퓨터;h:도구",
+"화면|기술:3|모니터,보기|s:모니터",
+"앱|기술:4,통신:2|스마트폰,설치|c:스마트폰",
+"인공지능|기술:5|로봇,학습,알고리즘|c:로봇;h:기술",
+"알고리즘|기술:4,과학:3|계산,코드,문제|c:인공지능",
+"코드|기술:4|프로그램,컴퓨터,입력|c:컴퓨터",
+"프로그램|기술:4|코드,설치,컴퓨터|c:코드",
+"네트워크|기술:4|인터넷,연결,서버|c:인터넷",
+"서버|기술:3|네트워크,데이터|c:네트워크",
+"검색|기술:3|인터넷,찾기,질문|c:인터넷",
+"집|장소:5|가족,아파트,거실,따뜻함|c:가족;h:장소",
+"아파트|장소:4,건축:4|집,층,빌라|c:집;h:건축",
+"빌라|장소:3,건축:3|집,주택|c:집;h:건축",
+"방|장소:5|침대,문,벽|c:침대;h:장소",
+"거실|장소:4|소파,텔레비전,가족|c:텔레비전;h:장소",
+"부엌|장소:5|요리,냄비,음식|c:요리;h:장소",
+"욕실|장소:4|샤워,거울,비누|c:샤워;h:장소",
+"화장실|장소:4|변기,손,씻기|s:욕실;h:장소",
+"마당|장소:4|집,풀,놀이|c:집;h:장소",
+"학교|장소:5,교육:5|교실,학생,선생님|c:교실;h:장소",
+"교실|장소:4,교육:4|칠판,책상,학생|c:학교;h:장소",
+"병원|장소:5,의료:5|의사,환자,진료|c:의사;h:장소",
+"약국|장소:3,의료:4|약,처방|c:약;h:장소",
+"마트|장소:4,경제:3|장보기,진열,카트|c:장보기;h:장소",
+"백화점|장소:4,경제:3|상품,층,쇼핑|c:마트;h:장소",
+"카페|장소:4,음식:3|커피,의자,대화|c:커피;h:장소",
+"식당|장소:4,음식:4|메뉴,밥,주방|c:밥;h:장소",
+"술집|장소:3,음식:3|술,안주,밤|c:술;h:장소",
+"공원|장소:4,자연:3|산책,나무,벤치|c:산책;h:장소",
+"놀이터|장소:4,놀이:3|아이,미끄럼틀|c:놀이;h:장소",
+"목욕탕|장소:4|씻기,탕,수건|c:씻기;h:장소",
+"사우나|장소:3|땀,더위,목욕탕|c:목욕탕;h:장소",
+"절|장소:3,종교:4|부처,기도,산|c:종교;h:장소",
+"교회|장소:3,종교:4|예배,신,종|c:종교;h:장소",
+"성당|장소:3,종교:4|미사,신부|c:교회;h:장소",
+"궁전|장소:4,문화:3|왕,화려함|c:왕",
+"성|장소:3,건축:4|벽,탑,중세|c:벽",
+"공항|장소:4,이동:4|비행기,출국,탑승|c:비행기;h:장소",
+"역|장소:4,이동:4|기차,지하철,승강장|c:기차;h:장소",
+"정류장|장소:3,이동:3|버스,기다림|c:버스",
+"주차장|장소:3|자동차,칸|c:자동차",
+"터널|장소:3,건축:3|어둠,도로,통과|c:도로",
+"골목|장소:4|좁음,담벼락,동네|c:동네;h:장소",
+"거리|장소:4|도로,사람,차|c:도로;h:장소",
+"도로|장소:3,이동:4|자동차,아스팔트,차선|c:자동차",
+"편의점|장소:4,경제:3|과자,24시간|c:마트;h:장소",
+"공장|장소:4,경제:3|기계,생산,근로자|c:기계;h:장소",
+"연구소|장소:3,과학:4|연구,실험,과학자|c:실험",
+"박물관|장소:4,문화:4|유물,전시,역사|c:전시;h:장소",
+"극장|장소:4,예술:3|영화,스크린,좌석|c:영화;h:장소",
+"호텔|장소:4,이동:3|숙박,여행,침대|c:여행;h:장소",
+"해수욕장|장소:4,자연:3|바다,모래,수영|c:해변;h:장소",
+"캠핑장|장소:3,놀이:3|텐트,불,자연|c:텐트",
+"텐트|도구:3|캠핑,천,잠|c:캠핑장",
+"층|건축:3,공간:3|계단,높이|c:계단",
+"지하|공간:3|땅,어둠,층|a:옥상",
+"옥상|공간:3,건축:3|높이,하늘,층|c:지붕;a:지하",
+"밭|장소:3,자연:3|농사,흙,채소|c:농사;h:장소",
+"농사|경제:3,자연:3|밭,수확,농부|c:밭",
+"수확|경제:3,자연:2|농사,열매,가을|c:농사",
+"왕|정치:4,문화:3|궁전,왕관,권력|c:궁전",
+"왕관|문화:2,패션:2|왕,보석|c:왕",
+"동물원|장소:4,동물:3|동물,관람,우리|c:동물;h:장소",
+"유치원|장소:3,교육:4|아이,놀이,선생님|c:아이;h:장소",
+"대학|장소:4,교육:5|강의,캠퍼스,학생|c:학교;h:교육",
+"강의|교육:4|대학,교수,수업|c:수업",
+"아침|시간:5|일출,아침밥,출근|c:일출;h:시간",
+"점심|시간:4|밥,낮,식당|c:밥;h:시간",
+"저녁|시간:5|밤,저녁밥,노을|c:노을;h:시간",
+"밤|시간:5|어둠,별,잠,알밤,가을|c:어둠;h:시간;p:1",
+"낮|시간:5|해,밝음,활동|c:태양;h:시간;a:밤",
+"일출|시간:3,자연:3|아침,해,수평선|c:아침",
+"일몰|시간:3,자연:3|저녁,해,노을|s:노을;h:시간",
+"주말|시간:4|쉼,가족,여가|c:휴식;h:시간",
+"휴일|시간:3|쉼,공휴일|c:주말;h:시간",
+"평일|시간:3|출근,일|c:출근;a:주말;h:시간",
+"오늘|시간:3|지금,하루|c:하루",
+"내일|시간:3|미래,계획|c:미래",
+"어제|시간:3|과거,기억|c:과거",
+"하루|시간:3|일상,스물네시간|c:일상",
+"일상|시간:3,사회:2|하루,반복,생활|c:하루",
+"생활|사회:3,시간:3|일상,살림,집|c:일상",
+"일|경제:4|직장,업무,노동|c:직장;p:1",
+"업무|경제:4|일,회사,보고서|c:일;h:경제",
+"노동|경제:4,사회:3|일,힘,임금|c:일;h:경제",
+"여가|시간:3,놀이:3|휴식,취미,주말|c:휴식",
+"휴식|시간:3|쉼,여가,잠|c:여가",
+"잠|시간:3,의료:2|침대,꿈,피로|c:침대;h:시간",
+"피로|의료:3,신체:3|지침,휴식,잠|c:휴식",
+"건강|의료:5|운동,병원,식사|c:운동;h:의료",
+"병|의료:5|아픔,병원,약|c:병원;h:의료",
+"약|의료:4|병원,약국,알약|c:약국;h:의료",
+"수술|의료:4|병원,의사,마취|c:병원;h:의료",
+"치료|의료:4|병원,약,회복|c:병원;h:의료",
+"주사|의료:4|바늘,아픔,병원|c:바늘;h:의료",
+"진료|의료:4|의사,환자,병원|s:치료;h:의료",
+"다이어트|의료:3,음식:2|살,운동,식단|c:운동",
+"요리|음식:4,생활:3|부엌,재료,냄비|c:부엌;h:음식",
+"청소|생활:4|집,먼지,청소기|c:청소기;h:생활",
+"빨래|생활:4|세탁기,옷,수건|c:세탁기;h:생활",
+"설거지|생활:3|그릇,물,부엌|c:부엌;h:생활",
+"장보기|생활:3,경제:3|마트,카트,재료|c:마트",
+"이사|생활:3|집,짐,포장|c:집",
+"운전|이동:4|자동차,면허,도로|c:자동차",
+"목욕|생활:3|씻기,탕,비누|c:씻기",
+"샤워|생활:3|씻기,물,욕실|c:목욕;h:생활",
+"씻기|생활:3|물,비누,청결|c:물",
+"산책|놀이:3,생활:3|걷기,공원,여유|c:공원",
+"걷기|이동:3,스포츠:2|발,산책|c:산책",
+"캠핑|놀이:4|텐트,불,자연|c:텐트",
+"공부|교육:5|책,시험,학원|c:책;h:교육",
+"시험|교육:4|공부,점수,긴장|c:공부;h:교육",
+"숙제|교육:3|학교,공부,과제|c:학교;h:교육",
+"학원|교육:4,장소:3|공부,수업|c:공부;h:교육",
+"수업|교육:4|학교,선생님,교실|c:학교;h:교육",
+"연습|교육:3,스포츠:2|반복,노력|c:노력",
+"노래방|장소:3,놀이:3|노래,마이크|c:노래;h:놀이",
+"마이크|도구:3|소리,노래|c:노래;h:도구",
+"면접|사회:3,경제:3|취업,질문,긴장|c:취업",
+"취업|경제:4|직장,이력서,면접|c:직장",
+"이력서|경제:3|취업,경력|c:취업",
+"경력|경제:3|일,경험|c:경험",
+"은퇴|경제:3,시간:2|나이,쉼|c:노인",
+"출장|경제:3,이동:3|회사,여행,일|c:회사",
+"야근|경제:3|회사,밤,피로|c:회사",
+"소파|도구:3|거실,앉다,쉼|c:거실;h:도구",
+"벤치|도구:2,장소:2|공원,앉다|c:공원",
+"칠판|도구:2,교육:3|교실,분필,수업|c:교실",
+"분필|도구:2|칠판,글씨|c:칠판",
+"서랍|도구:2|책상,보관|c:책상",
+"소지품|도구:2|가방,휴대|c:가방",
+"포장|생활:2|선물,상자,종이|c:상자",
+"짐|이동:2|가방,이사,무게|c:가방",
+"사랑|||s:애정",
+"애정|||s:사랑,정",
+"증오|||s:미움",
+"미움|||s:증오",
+"분노|||s:화",
+"화|||s:분노",
+"공포|||s:두려움,무서움",
+"두려움|||s:공포,무서움",
+"무서움|||s:공포,두려움",
+"외로움|||s:고독",
+"고독|||s:외로움",
+"질투|||s:시기",
+"시기|||s:질투",
+"수치심|||s:부끄러움",
+"부끄러움|||s:수치심",
+"권태|||s:지루함",
+"지루함|||s:권태",
+"안도|||s:안심",
+"안심|||s:안도",
+"감사|||s:고마움",
+"고마움|||s:감사",
+"신뢰|||s:믿음",
+"믿음|||s:신뢰",
+"인생|||s:삶",
+"삶|||s:인생",
+"파도|||s:물결",
+"물결|||s:파도",
+"강|||s:하천",
+"하천|||s:강",
+"풀|||s:잔디",
+"잔디|||s:풀",
+"돌|||s:바위",
+"바위|||s:돌",
+"태풍|||s:폭풍",
+"폭풍|||s:태풍",
+"노을|||s:황혼,일몰",
+"황혼|||s:노을",
+"일몰|||s:노을",
+"기온|||s:온도",
+"온도|||s:기온",
+"날씨|||s:기후",
+"기후|||s:날씨",
+"개|||s:강아지",
+"강아지|||s:개",
+"욕실|||s:화장실",
+"화장실|||s:욕실",
+"경기장|||s:운동장",
+"운동장|||s:경기장",
+"이익|||s:수익",
+"수익|||s:이익",
+"손해|||s:손실",
+"손실|||s:손해",
+"주식|||s:증시",
+"증시|||s:주식",
+"모니터|||s:화면",
+"화면|||s:모니터",
+"숟가락|||s:수저",
+"수저|||s:숟가락",
+"쿠키|||s:과자",
+"과자|||s:쿠키",
+"고래|||c:돌고래",
+"돌고래|||c:고래",
+"국|||c:찌개",
+"찌개|||c:국",
+"라면|||c:국수",
+"국수|||c:라면",
+"과자|||c:사탕",
+"감자|||c:고구마",
+"국수|||c:우동",
+"반지|||c:목걸이",
+"목욕|||c:샤워",
+"목욕탕|||c:사우나",
+"발레|||c:춤",
+"밤|||a:낮",
+"구속|||a:자유",
+"가난|||a:부자",
+"권리|||a:의무",
+"이익|||a:손해",
+"여름|||a:겨울",
+"겨울|||a:여름",
+"봄|||a:가을",
+"가을|||a:봄",
+"사랑|||c:설렘",
+"설렘|||c:사랑",
+"원한|||c:미움",
+"복수|||c:원한",
+"태권도|||c:도장",
+"도장|||c:태권도",
+"바다|||c:항구",
+"항구|||c:바다",
+"커피|||c:카페",
+"카페|||c:커피",
+"결혼식|||c:신부",
+"결혼식|||c:신랑",
+"축구|||c:골대",
+"책|||c:독서",
+"독서|||c:책",
+"산|||c:등산",
+"등산|||c:산",
+"의사|||c:병원",
+"병원|||c:의사",
+"눈|||c:겨울",
+"겨울|||c:눈",
+"주식|||c:투자",
+"투자|||c:주식",
+"사과|||c:과일",
+"포도|||c:과일",
+"바나나|||c:과일",
+"딸기|||c:과일",
+"수박|||c:과일",
+"귤|||c:과일",
+"배|||c:과일",
+"음식|||c:맛",
+"맛|||c:음식",
+"향기|||c:꽃",
+"꽃|||c:향기",
+"연기|||c:불",
+"불|||c:연기",
+"수학|||c:숫자",
+"숫자|||c:수학",
+"대화|||c:말",
+"말|||c:대화",
+"메시지|||c:문자",
+"문자|||c:메시지",
+"안전|||a:위험",
+"위험|||a:안전",
+"공정|||c:정의",
+"정의|||c:공정",
+"준비|||c:계획",
+"계획|||c:준비",
+"반복|||c:습관",
+"습관|||c:반복",
+"실험|||c:연구소",
+"목욕|||c:목욕탕",
+"목욕탕|||c:목욕",
+"사랑|||c:이별",
+"이별|||c:사랑",
+"만남|||c:이별",
+"이별|||c:만남",
+"기술|||c:기계",
+"문화|||c:예술"
+];
+
+  var WORDS = Object.create(null);
+  var LIST = [];
+  var LINK = new Map();      // word -> Map(neighbor -> {s:strength, t:type, ant:bool})
+  var RESOLVE = new Map();   // raw string -> {n, oov, lex, proxy}
+  var CACHE = new Map();
+
+  /* ---------- Hangul / lexical helpers ---------- */
+  var CHO = 'ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ';
+  var JUNG = 'ㅏㅐㅑㅒㅓㅔㅕㅖㅗㅘㅙㅚㅛㅜㅝㅞㅟㅠㅡㅢㅣ';
+  var JONG = ' ㄱㄲㄳㄴㄵㄶㄷㄹㄺㄻㄼㄽㄾㄿㅀㅁㅂㅄㅅㅆㅇㅈㅊㅋㅌㅍㅎ';
+
+  function jamo(str) {
+    var out = [];
+    for (var i = 0; i < str.length; i++) {
+      var c = str.charCodeAt(i);
+      if (c >= 0xAC00 && c <= 0xD7A3) {
+        var s = c - 0xAC00;
+        var cho = Math.floor(s / 588);
+        var jung = Math.floor((s % 588) / 28);
+        var jong = s % 28;
+        out.push(CHO.charAt(cho), JUNG.charAt(jung));
+        if (jong > 0) out.push(JONG.charAt(jong));
+      } else {
+        out.push(str.charAt(i));
+      }
+    }
+    return out.join('');
+  }
+
+  function grams(s) {
+    var j = jamo(s);
+    var g = Object.create(null);
+    var n = 0;
+    for (var i = 0; i < j.length - 1; i++) {
+      var k = j.charAt(i) + j.charAt(i + 1);
+      if (!g[k]) { g[k] = 1; n++; }
+    }
+    if (j.length === 1) { g[j] = 1; n++; }
+    return { set: g, n: n };
+  }
+
+  function lexSim(a, b) {
+    var A = grams(a), B = grams(b);
+    if (!A.n || !B.n) return 0;
+    var inter = 0;
+    for (var k in A.set) if (B.set[k]) inter++;
+    return (2 * inter) / (A.n + B.n);
+  }
+
+  function shareSyllable(a, b) {
+    for (var i = 0; i < a.length; i++) if (b.indexOf(a.charAt(i)) >= 0) return true;
+    return false;
+  }
+
+  function clamp(x, lo, hi) { return x < lo ? lo : (x > hi ? hi : x); }
+
+  /* ---------- lexicon loading ---------- */
+  function addWord(name) {
+    var w = {
+      n: name,
+      v: new Float64Array(ND),
+      tags: [],
+      tagSet: Object.create(null),
+      s: [], a: [], h: [], u: [], c: [],
+      poly: false
+    };
+    WORDS[name] = w;
+    LIST.push(w);
+    return w;
+  }
+
+  function pushTag(w, t) {
+    if (!t) return;
+    if (w.tagSet[t]) return;
+    w.tagSet[t] = 1;
+    w.tags.push(t);
+  }
+
+  for (var li = 0; li < RAW.length; li++) {
+    var line = RAW[li];
+    if (!line) continue;
+    var parts = line.split('|');
+    if (parts.length < 4) continue;
+    var name = parts[0].trim();
+    if (!name) continue;
+    var w = WORDS[name] || addWord(name);
+
+    var dom = parts[1].split(',');
+    for (var i = 0; i < dom.length; i++) {
+      var kv = dom[i].trim();
+      if (!kv) continue;
+      var p = kv.split(':');
+      var idx = DI[p[0].trim()];
+      if (idx === undefined) continue;
+      w.v[idx] += parseFloat(p[1]) || 1;
+    }
+
+    var tg = parts[2].split(',');
+    for (var j = 0; j < tg.length; j++) pushTag(w, tg[j].trim());
+
+    var rl = parts[3].split(';');
+    for (var k = 0; k < rl.length; k++) {
+      var seg = rl[k].trim();
+      if (!seg) continue;
+      var q = seg.split(':');
+      var key = q[0].trim();
+      var val = (q[1] || '').trim();
+      if (key === 'p') { w.poly = true; continue; }
+      if (!val) continue;
+      var targets = val.split(',');
+      for (var m = 0; m < targets.length; m++) {
+        var tname = targets[m].trim();
+        if (!tname) continue;
+        if (key === 's' && w.s.indexOf(tname) < 0) w.s.push(tname);
+        else if (key === 'a' && w.a.indexOf(tname) < 0) w.a.push(tname);
+        else if (key === 'h' && w.h.indexOf(tname) < 0) w.h.push(tname);
+        else if (key === 'u' && w.u.indexOf(tname) < 0) w.u.push(tname);
+        else if (key === 'c' && w.c.indexOf(tname) < 0) w.c.push(tname);
+      }
+    }
+  }
+
+  /* ---------- build relation graph ---------- */
+  var TYPE_KO = { s: '동의어', h: '상위어', u: '하위어', c: '공기어', a: '반의어', x: '연관 관계' };
+  var STRENGTH = { s: 0.97, h: 0.62, u: 0.62, c: 0.60, a: 0.48, x: 0.40 };
+
+  function link(a, b, type, strength) {
+    if (!a || !b || a === b) return;
+    var map = LINK.get(a);
+    if (!map) { map = new Map(); LINK.set(a, map); }
+    var cur = map.get(b);
+    if (!cur || cur.s < strength) {
+      map.set(b, { s: strength, t: type, ant: type === 'a' });
+    }
+  }
+
+  LIST.forEach(function (w) {
+    LINK.set(w.n, new Map());
+  });
+
+  // symmetrize + inverse hypernym links
+  LIST.forEach(function (w) {
+    w.s.forEach(function (t) { link(w.n, t, 's', STRENGTH.s); link(t, w.n, 's', STRENGTH.s); });
+    w.a.forEach(function (t) { link(w.n, t, 'a', STRENGTH.a); link(t, w.n, 'a', STRENGTH.a); });
+    w.c.forEach(function (t) { link(w.n, t, 'c', STRENGTH.c); link(t, w.n, 'c', STRENGTH.c); });
+    w.h.forEach(function (t) {
+      link(w.n, t, 'h', STRENGTH.h);
+      link(t, w.n, 'u', STRENGTH.h);
+      var tw = WORDS[t];
+      if (tw && tw.u.indexOf(w.n) < 0) tw.u.push(w.n);
+    });
+    w.u.forEach(function (t) {
+      link(w.n, t, 'u', STRENGTH.u);
+      link(t, w.n, 'h', STRENGTH.h);
+      var tw = WORDS[t];
+      if (tw && tw.h.indexOf(w.n) < 0) tw.h.push(w.n);
+    });
+  });
+
+  // tag links: a dictionary word used as another word's context tag is a weak co-occurrence
+  LIST.forEach(function (w) {
+    w.tags.forEach(function (t) {
+      if (WORDS[t]) link(w.n, t, 'c', 0.42);
+    });
+  });
+
+  // two-hop association through synonym / co-occurrence edges only
+  var twoHop = new Map();
+  LINK.forEach(function (map, from) {
+    var acc = new Map();
+    map.forEach(function (v1, mid) {
+      if (v1.t !== 's' && v1.t !== 'c') return;
+      var m2 = LINK.get(mid);
+      if (!m2) return;
+      m2.forEach(function (v2, to) {
+        if (to === from) return;
+        if (map.has(to)) return;
+        var st = v1.s * v2.s * 0.62;
+        if (st < 0.12) return;
+        var cur = acc.get(to);
+        if (!cur || cur.s < st) acc.set(to, { s: st, t: 'x', ant: false });
+      });
+    });
+    twoHop.set(from, acc);
+  });
+
+  twoHop.forEach(function (acc, from) {
+    var map = LINK.get(from);
+    acc.forEach(function (v, to) {
+      var cur = map.get(to);
+      if (!cur) map.set(to, v);
+    });
+  });
+
+  /* ---------- similarity core ---------- */
+  function cos(A, B) {
+    var dot = 0, na = 0, nb = 0;
+    for (var i = 0; i < ND; i++) {
+      var x = A[i], y = B[i];
+      dot += x * y; na += x * x; nb += y * y;
+    }
+    if (!na || !nb) return 0;
+    return dot / Math.sqrt(na * nb);
+  }
+
+  function tagOverlap(A, B) {
+    var inter = 0;
+    for (var i = 0; i < A.tags.length; i++) if (B.tagSet[A.tags[i]]) inter++;
+    return inter;
+  }
+
+  function resolveWord(raw) {
+    var name = String(raw == null ? '' : raw).trim();
+    if (!name) return null;
+    var cached = RESOLVE.get(name);
+    if (cached) return cached;
+    var out;
+    if (WORDS[name]) {
+      out = { n: name, w: WORDS[name], oov: false, lex: 1, proxy: null };
+    } else {
+      var best = null, bestSim = 0;
+      for (var i = 0; i < LIST.length; i++) {
+        var s = lexSim(name, LIST[i].n);
+        if (s > bestSim) { bestSim = s; best = LIST[i]; }
+      }
+      if (best && bestSim >= 0.40) {
+        out = { n: name, w: best, oov: true, lex: bestSim, proxy: best.n };
+      } else {
+        out = { n: name, w: null, oov: true, lex: bestSim, proxy: null };
+      }
+    }
+    RESOLVE.set(name, out);
+    return out;
+  }
+
+  function buildTips(r) {
+    var tips = [];
+    if (r.same) {
+      tips.push('히든 워드와 완전히 같은 단어입니다. 유사도 100% — 힌트로는 사용할 수 없습니다.');
+      return tips;
+    }
+    if (r.relType === '반의어') {
+      tips.push('반의어 관계입니다. 의미는 반대지만 늘 함께 쓰여 관계 구조 점수는 높게 잡힙니다. 상대를 흔드는 함정 힌트로 적합합니다.');
+    } else if (r.relType === '동의어') {
+      tips.push('동의어 관계 — 정답을 거의 그대로 노출합니다.');
+    } else if (r.relType === '상위어' || r.relType === '하위어') {
+      tips.push('상위어-하위어 관계입니다. 범주를 좁혀 주는 안전한 힌트입니다.');
+    } else if (r.relType === '공기어') {
+      tips.push('공기어(함께 자주 쓰이는 단어) 관계입니다. 자연스러운 연상 힌트입니다.');
+    } else if (r.relType === '연관 관계') {
+      tips.push('두 단계로 이어진 연관 관계입니다. 직접 관계는 아닙니다.');
+    }
+    if (r.poly.length) {
+      tips.push('다의어 주의: ' + r.poly.map(function (p) { return "'" + p + "'"; }).join(', ') + ' — 다른 뜻으로 읽히면 유사도가 왜곡됩니다.');
+    }
+    if (r.total > 95) tips.push('95% 초과 — 힌트로 제시하면 그 즉시 힌트 제시가 종료됩니다.');
+    else if (r.total >= 85) tips.push('85% 이상 — 매우 강한 힌트입니다. 정답이 쉽게 드러납니다.');
+    else if (r.total >= 65) tips.push('65~85% — 힌트로 쓰기 좋은 구간입니다.');
+    else if (r.total >= 40) tips.push('40~65% — 추리가 필요한 중간 강도입니다.');
+    else if (r.total < 25) tips.push('25% 미만 — 사실상 무관어입니다. 상대를 속이는 낚시 힌트로 쓸 수 있습니다.');
+    if (r.oov.length) {
+      tips.push('사전에 없는 단어(' + r.oov.join(', ') + ')는 형태 유사도로 근사했습니다. 정확도가 낮습니다.');
+    }
+    return tips;
+  }
+
+  function similarity(a, b) {
+    var A = resolveWord(a);
+    var B = resolveWord(b);
+    if (!A || !B) {
+      return { ok: false, err: '두 단어를 모두 입력해 주세요.', a: String(a || ''), b: String(b || '') };
+    }
+    var same = A.n === B.n && A.oov === false && B.oov === false;
+    var ck = same ? null : (A.n < B.n ? A.n + '\u0001' + B.n : B.n + '\u0001' + A.n);
+    if (ck && CACHE.has(ck)) {
+      var hit = CACHE.get(ck);
+      return Object.assign({}, hit, { a: A.n, b: B.n });
+    }
+
+    if (!A.w || !B.w) {
+      var lx = lexSim(A.n, B.n);
+      var tot0 = clamp(Math.round(lx * 46), 1, 45);
+      var res0 = {
+        ok: true, a: A.n, b: B.n, total: tot0, same: false,
+        sem: 0, semDist: 100, ctx: 0, rel: 0, relScore: 0, relType: '없음',
+        lex: lx, poly: [], oov: [A.w ? null : A.n, B.w ? null : B.n].filter(Boolean),
+        ant: false, proxy: null
+      };
+      res0.tips = buildTips(res0);
+      return res0;
+    }
+
+    var inter = tagOverlap(A.w, B.w);
+    var nA = A.w.tags.length || 1, nB = B.w.tags.length || 1;
+    var dice = (2 * inter) / (nA + nB);
+
+    var sem0 = cos(A.w.v, B.w.v);
+    var sem = sem0 * (0.68 + 0.32 * dice);
+
+    var ctx = clamp((inter / Math.sqrt(nA * nB)) * 0.85 + dice * 0.15, 0, 1);
+
+    var aKey = A.proxy || A.n;
+    var bKey = B.proxy || B.n;
+    var linkObj = null;
+    if (aKey === bKey) {
+      linkObj = null;
+    } else {
+      var lm = LINK.get(aKey);
+      if (lm) linkObj = lm.get(bKey);
+      if (!linkObj) {
+        var lm2 = LINK.get(bKey);
+        if (lm2) linkObj = lm2.get(aKey);
+      }
+    }
+    var rel = linkObj ? linkObj.s : 0;
+    var ant = !!(linkObj && linkObj.ant);
+    var relType = linkObj ? (TYPE_KO[linkObj.t] || '연관 관계') : '없음';
+
+    var lex = lexSim(A.n, B.n);
+
+    var base = 1 - (1 - 0.63 * sem) * (1 - 0.50 * ctx) * (1 - 0.92 * rel) * (1 - 0.16 * lex);
+    if (ant) base *= 0.58;
+
+    var oovList = [];
+    var damp = 1;
+    if (A.oov) { oovList.push(A.n); damp = Math.min(damp, 0.5 + 0.5 * A.lex); }
+    if (B.oov) { oovList.push(B.n); damp = Math.min(damp, 0.5 + 0.5 * B.lex); }
+    base *= damp;
+
+    var total = Math.round(100 * Math.pow(clamp(base, 0, 0.995), 0.70));
+    if (same) total = 100;
+    total = clamp(total, 1, 100);
+
+    var res = {
+      ok: true, a: A.n, b: B.n, total: total, same: same,
+      sem: Math.round(sem0 * 100), semDist: Math.round((1 - sem0) * 100),
+      ctx: Math.round(ctx * 100), rel: Math.round(rel * 100), relScore: Math.round(rel * 100),
+      relType: relType, relRaw: rel, lex: Math.round(lex * 100),
+      poly: (A.w.poly ? [A.n] : []).concat(B.w.poly ? [B.n] : []),
+      oov: oovList, ant: ant,
+      proxy: (A.proxy ? A.n + '→' + A.proxy : (B.proxy ? B.n + '→' + B.proxy : null))
+    };
+    res.tips = buildTips(res);
+    if (ck) CACHE.set(ck, res);
+    return res;
+  }
+
+  /* ---------- candidate selection ---------- */
+  function primaryDomain(w) {
+    var best = -1, bi = -1;
+    for (var i = 0; i < ND; i++) if (w.v[i] > best) { best = w.v[i]; bi = i; }
+    return bi;
+  }
+
+  function bySeed(seed) {
+    var s = seed >>> 0;
+    return function () {
+      s = (s * 1664525 + 1013904223) >>> 0;
+      return s / 4294967296;
+    };
+  }
+
+  function pickCandidates(hiddenRaw, n, rng, seed) {
+    n = n || 5;
+    rng = rng || (seed !== undefined ? bySeed(seed) : Math.random);
+    var H = resolveWord(hiddenRaw);
+    if (!H || !H.w) return null;
+    var hw = H.w;
+    var scored = [];
+    for (var i = 0; i < LIST.length; i++) {
+      var w = LIST[i];
+      if (w.n === H.n) continue;
+      var s = similarity(H.n, w.n);
+      if (s.total < 24 || s.total > 64) continue;
+      var domShared = 0;
+      for (var k = 0; k < ND; k++) if (w.v[k] && hw.v[k]) domShared += Math.min(w.v[k], hw.v[k]);
+      var sc = (s.detail = 0), sc2 = 0;
+      sc2 += (s.total >= 32 && s.total <= 56) ? 4 : 2;
+      sc2 += Math.min(6, domShared * 0.8);
+      sc2 += rng() * 2.6;
+      scored.push({ w: w, sc: sc2, sim: s.total });
+    }
+    scored.sort(function (x, y) { return y.sc - x.sc; });
+    var out = [{ n: H.n, sim: 100 }];
+    for (var j = 0; j < scored.length && out.length < n; j++) {
+      var cand = scored[j];
+      var ok = true;
+      for (var m = 0; m < out.length; m++) {
+        if (candidateTooClose(cand.w.n, out[m].n)) { ok = false; break; }
+      }
+      if (ok) out.push({ n: cand.w.n, sim: cand.sim });
+    }
+    return out;
+  }
+
+  function candidateTooClose(a, b) {
+    if (a === b) return true;
+    var s = similarity(a, b);
+    return s.total > 78;
+  }
+
+  /* ---------- hint generation (AI submitter) ---------- */
+  var DIFF = {
+    easy:   { band: [66, 93], disc: [16, 999], label: '쉬움' },
+    normal: { band: [50, 84], disc: [8, 999],  label: '보통' },
+    hard:   { band: [34, 68], disc: [-999, 9], label: '어려움' }
+  };
+
+  function generateHints(hidden, candNames, difficulty, count, seed) {
+    var cfg = DIFF[difficulty] || DIFF.normal;
+    var rng = bySeed(seed || 7);
+    var cands = candNames.filter(function (c) { return c !== hidden; });
+    var bandMid = (cfg.band[0] + cfg.band[1]) / 2;
+    var pool = [];
+    for (var i = 0; i < LIST.length; i++) {
+      var w = LIST[i];
+      if (w.n === hidden) continue;
+      if (candNames.indexOf(w.n) >= 0) continue;
+      var s = similarity(hidden, w.n);
+      if (s.total > 93 || s.total < 30) continue;
+      var otherMax = 0, otherName = '';
+      for (var k = 0; k < cands.length; k++) {
+        var cs = similarity(cands[k], w.n);
+        if (cs.total > otherMax) { otherMax = cs.total; otherName = cands[k]; }
+      }
+      var disc = s.total - otherMax;
+      var minDisc = difficulty === 'easy' ? 12 : (difficulty === 'normal' ? 6 : -999);
+      var qual = difficulty === 'hard' ? (disc <= 14) : (disc >= minDisc);
+      var fit = 0;
+      // band fit
+      if (s.total >= cfg.band[0] && s.total <= cfg.band[1]) fit += 8;
+      else fit += Math.max(0, 8 - Math.abs(s.total - bandMid) / 5);
+      // discrimination fit
+      if (difficulty === 'hard') fit += Math.max(0, 6 - Math.abs(disc) / 5);
+      else fit += clamp(disc / 6, -3, 10);
+      fit += rng() * 0.6;
+      pool.push({ word: w.n, total: s.total, disc: disc, other: otherMax, otherName: otherName, fit: fit, qual: qual });
+    }
+    pool.sort(function (x, y) { return (y.qual ? 1 : 0) - (x.qual ? 1 : 0) || y.fit - x.fit; });
+    var picked = [];
+    var used = Object.create(null);
+    var want = count || 10;
+    for (var p = 0; p < pool.length && picked.length < want; p++) {
+      if (used[pool[p].word]) continue;
+      used[pool[p].word] = 1;
+      picked.push(pool[p]);
+    }
+    picked.sort(function (x, y) {
+      if (!!y.qual !== !!x.qual) return (y.qual ? 1 : 0) - (x.qual ? 1 : 0);
+      return y.total - x.total;
+    });
+    return picked;
+  }
+
+  /* ---------- AI guessers (mode 2) ---------- */
+  var PERSONAS = [
+    { id: 'gyeong', name: '경렬 AI', style: '논리 추론형', desc: '모든 힌트의 예측 오차를 고르게 계산합니다. 오차가 작으면 망설이지 않고 제출합니다.', noise: 4, threshold: 0.45, weights: 'even' },
+    { id: 'dongmin', name: '동민 AI', style: '연상 심리형', desc: '유사도가 높은 힌트에 집중하고 낮은 힌트는 흘려듣습니다. 감으로 뒤집는 판단이 잦습니다.', noise: 11, threshold: 0.95, weights: 'high' },
+    { id: 'john', name: '존박 AI', style: '어휘 탐색형', desc: '최근 힌트와 형태가 닮은 후보를 우선합니다. 글자 낚시에 잘 걸립니다.', noise: 7, threshold: 0.7, weights: 'recent' }
+  ];
+
+  function gauss(rng) {
+    var u = Math.max(1e-9, rng()), v = Math.max(1e-9, rng());
+    return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v);
+  }
+
+  function aiVerdict(hints, candNames, persona, seed) {
+    var rng = bySeed(seed || 11);
+    var use = hints;
+    if (persona.weights === 'recent') use = hints.slice(Math.max(0, hints.length - 5));
+    // the AI hears each published score imperfectly
+    var perceived = use.map(function (h) {
+      return { word: h.word, total: clamp(h.total + gauss(rng) * persona.noise * 0.9, 1, 99) };
+    });
+    var rows = [];
+    for (var i = 0; i < candNames.length; i++) {
+      var c = candNames[i];
+      var sum = 0, wsum = 0;
+      for (var k = 0; k < perceived.length; k++) {
+        var h = perceived[k];
+        var wt = 1;
+        if (persona.weights === 'high') wt = h.total >= 65 ? 1.8 : 0.45;
+        var pred = similarity(c, h.word).total;
+        sum += Math.abs(pred - h.total) * wt;
+        wsum += wt;
+      }
+      var err0 = wsum ? sum / wsum : 99;
+      var err1 = Math.max(0, err0 + gauss(rng) * 2.5);
+      if (persona.weights === 'recent' && perceived.length) {
+        var top = perceived[perceived.length - 1].word;
+        if (shareSyllable(c, top)) err1 = Math.max(0, err1 - 6);
+      }
+      rows.push({ n: c, err: Math.round(err1 * 10) / 10, err0: Math.round(err0 * 10) / 10 });
+    }
+    rows.sort(function (x, y) { return x.err - y.err; });
+    var best = rows[0], second = rows[1];
+    var margin = second ? (second.err - best.err) : 99;
+    var conf = margin / Math.max(5, best.err + 5);
+    var decisive = best.err < 24 && conf > persona.threshold;
+    if (!hints.length) {
+      return { id: persona.id, name: persona.name, style: persona.style, ranking: rows, guess: null, conf: 0, margin: 0, passed: true, note: '아직 힌트가 없어 판단을 보류합니다.', perceived: [] };
+    }
+    var note;
+    if (decisive) {
+      note = '힌트 ' + use.length + '개 기준 ' + best.n + '의 예측 오차가 ' + best.err + '%p로 가장 작습니다. 확신도 ' + Math.round(clamp(conf, 0, 1) * 100) + '% — 제출합니다.';
+    } else if (best.err < 26) {
+      note = best.n + '이 가장 유력하지만 2순위 ' + (second ? second.n : '-') + '과 ' + (Math.round(margin * 10) / 10) + '%p 차이입니다. 확신이 서지 않아 관망합니다.';
+    } else {
+      note = '공개 점수와 예측이 크게 어긋납니다(최소 오차 ' + best.err + '%p). 힌트를 믿기 어려워 판단을 보류합니다.';
+    }
+    return {
+      id: persona.id, name: persona.name, style: persona.style,
+      ranking: rows, guess: decisive ? best.n : null, conf: Math.round(clamp(conf, 0, 1) * 100),
+      margin: Math.round(margin * 10) / 10, passed: !decisive, note: note, perceived: perceived
+    };
+  }
+
+  /* ---------- misc ---------- */
+  function wordCount() { return LIST.length; }
+  function stats() {
+    var s = 0, a = 0, c = 0, h = 0, poly = 0;
+    LIST.forEach(function (w) {
+      s += w.s.length; a += w.a.length; c += w.c.length; h += w.h.length;
+      if (w.poly) poly++;
+    });
+    return { words: LIST.length, domains: ND, syn: s, ant: a, co: c, hyper: h, poly: poly };
+  }
+  function randomWord(rng) {
+    rng = rng || Math.random;
+    return LIST[Math.floor(rng() * LIST.length)].n;
+  }
+
+  /* remote (OpenAI embeddings) — optional, testlab only */
+  var REMOTE = { key: '', model: 'text-embedding-3-small', on: false };
+  var ECACHE = new Map();
+
+  function loadRemote() {
+    try {
+      var raw = global.localStorage && global.localStorage.getItem('hw_remote');
+      if (raw) {
+        var o = JSON.parse(raw);
+        REMOTE.key = o.key || '';
+        REMOTE.model = o.model || 'text-embedding-3-small';
+        REMOTE.on = !!o.on;
+      }
+    } catch (e) {}
+  }
+  function saveRemote(o) {
+    REMOTE.key = o.key || '';
+    REMOTE.model = o.model || 'text-embedding-3-small';
+    REMOTE.on = !!o.on;
+    try {
+      global.localStorage && global.localStorage.setItem('hw_remote', JSON.stringify(REMOTE));
+    } catch (e) {}
+  }
+  loadRemote();
+
+  function embed(text) {
+    var key = 'e:' + text;
+    if (ECACHE.has(key)) return Promise.resolve(ECACHE.get(key));
+    var body = { model: REMOTE.model, input: text };
+    return fetch('https://api.openai.com/v1/embeddings', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + REMOTE.key },
+      body: JSON.stringify(body)
+    }).then(function (r) {
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.json();
+    }).then(function (j) {
+      var v = j.data[0].embedding;
+      ECACHE.set(key, v);
+      return v;
+    });
+  }
+
+  function remoteSim(a, b) {
+    if (!REMOTE.on || !REMOTE.key) return Promise.reject(new Error('off'));
+    return Promise.all([embed(a), embed(b)]).then(function (vs) {
+      var x = vs[0], y = vs[1], dot = 0, nx = 0, ny = 0;
+      for (var i = 0; i < x.length; i++) { dot += x[i] * y[i]; nx += x[i] * x[i]; ny += y[i] * y[i]; }
+      var c = dot / Math.sqrt(nx * ny);
+      var pct = clamp(Math.round(((c - 0.30) / 0.55) * 90 + 8), 1, 99);
+      var local = similarity(a, b);
+      local.total = pct;
+      local.remote = true;
+      local.cosine = Math.round(c * 1000) / 1000;
+      local.remoteModel = REMOTE.model;
+      local.semDist = Math.round((1 - c) * 100);
+      local.tips = ['OpenAI ' + REMOTE.model + ' 실시간 임베딩 (코사인 ' + local.cosine + ') 기준입니다.'].concat(local.tips || []);
+      return local;
+    });
+  }
+
+  global.HW = {
+    sim: similarity,
+    simAsync: function (a, b) {
+      return remoteSim(a, b).catch(function () { return similarity(a, b); });
+    },
+    words: function () { return LIST.map(function (w) { return w.n; }); },
+    has: function (w) { return !!WORDS[String(w || '').trim()]; },
+    count: wordCount,
+    stats: stats,
+    candidates: pickCandidates,
+    generateHints: generateHints,
+    personas: PERSONAS,
+    aiVerdict: aiVerdict,
+    randomWord: randomWord,
+    bySeed: bySeed,
+    shareSyllable: shareSyllable,
+    difficulty: DIFF,
+    remote: REMOTE,
+    setRemote: saveRemote,
+    DOMAINS: DOMAINS
+  };
+})(typeof window !== 'undefined' ? window : globalThis);
+
+</script>
+<script>
+(function () {
+  'use strict';
+  var HW = window.HW;
+  function $(s, r) { return (r || document).querySelector(s); }
+
+  var S = {
+    mode: 'guesser',
+    diff: 'normal',
+    round: 1,
+    rounds: 2,
+    me: 0,
+    ai: 0,
+    pieces: 2,
+    g: null,
+    g2: { cands: null, hidden: null, hints: [], resolved: 0, aiLog: [], result: null, ended: false, draft: '' },
+    lab: { a: '바다', b: '파도', res: null, busy: false, recent: [] }
+  };
+
+  /* ---------------- helpers ---------------- */
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+  function stageOf(n) { return n <= 3 ? 1 : (n <= 7 ? 2 : 3); }
+  function stagePoint(st) { return st === 1 ? 3 : (st === 2 ? 2 : 1); }
+  function mult() { return S.round === 2 ? 2 : 1; }
+  function stageName(st) { return st === 1 ? '1차 (힌트 1~3)' : st === 2 ? '2차 (힌트 4~7)' : '3차 (힌트 8~10)'; }
+
+  function barColor(v) {
+    if (v > 95) return 'linear-gradient(90deg,#ff8a9d,#ff5470)';
+    if (v >= 70) return 'linear-gradient(90deg,#4fd8e8,#e2b74e)';
+    if (v >= 40) return 'linear-gradient(90deg,#3aa8c9,#4fd8e8)';
+    return 'linear-gradient(90deg,#3a3a4d,#5a5a72)';
+  }
+  function scoreColor(v) {
+    if (v > 95) return '#ff7d90';
+    if (v >= 85) return '#f3d27c';
+    if (v >= 65) return '#9becf6';
+    if (v >= 40) return '#b9c9d6';
+    return '#8a8aa0';
+  }
+  function gaugeClass(v) { return v > 95 ? 'danger' : (v >= 70 ? 'mid' : 'low'); }
+
+  var toastTimer;
+  function toast(msg) {
+    var t = $('#toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { t.classList.remove('show'); }, 2300);
+  }
+
+  function openModal(title, body) {
+    $('#modal-title').textContent = title;
+    $('#modal-body').innerHTML = body;
+    $('#modal').classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeModal() {
+    $('#modal').classList.add('hidden');
+    document.body.style.overflow = '';
+  }
+
+  /* ---------------- render ---------------- */
+  function render() {
+    var active = document.activeElement;
+    var aid = active && active.id ? active.id : null;
+    var pos = active && active.selectionStart != null ? active.selectionStart : null;
+
+    Array.prototype.forEach.call(document.querySelectorAll('.tab'), function (b) {
+      b.classList.toggle('active', b.getAttribute('data-mode') === S.mode);
+    });
+    renderScore();
+    var html;
+    if (S.mode === 'guesser') html = viewGuesser();
+    else if (S.mode === 'setter') html = viewSetter();
+    else html = viewLab();
+    $('#view').innerHTML = html;
+
+    if (aid) {
+      var el = document.getElementById(aid);
+      if (el && el.focus) {
+        el.focus();
+        try { if (pos != null && el.setSelectionRange) el.setSelectionRange(pos, pos); } catch (e) {}
+      }
+    }
+  }
+
+  function renderScore() {
+    var sb = $('#scorebar');
+    if (S.mode === 'lab') {
+      var st = HW.stats();
+      sb.innerHTML =
+        '<div class="sb-item">내장 사전 <b>' + st.words + '</b>개 명사</div>' +
+        '<div class="sb-sep"></div>' +
+        '<div class="sb-item">의미 차원 <b>' + st.domains + '</b></div>' +
+        '<div class="sb-sep"></div>' +
+        '<div class="sb-item">' + (HW.remote.on && HW.remote.key
+          ? '<span class="badge cyan">실시간 임베딩 ON</span>'
+          : '<span class="badge">오프라인 엔진</span>') + '</div>';
+      return;
+    }
+    var pips = '';
+    for (var i = 0; i < 2; i++) pips += '<span class="piece' + (i < S.pieces ? ' on' : '') + '"></span>';
+    sb.innerHTML =
+      '<div class="sb-item">라운드 <b>' + S.round + '</b> / ' + S.rounds + '</div>' +
+      (S.round === 2 ? '<span class="badge gold">배점 ×2</span>' : '') +
+      '<div class="sb-sep"></div>' +
+      '<div class="sb-item me">나 <b>' + S.me + '</b></div>' +
+      '<div class="sb-item ai">AI <b>' + S.ai + '</b></div>' +
+      '<div class="sb-sep"></div>' +
+      '<div class="sb-item">피스 <span class="pieces">' + pips + '</span></div>';
+  }
+  function renderScorebarOnly() { renderScore(); }
+
+  /* ---------------- mode 1 : guesser ---------------- */
+  function guesserSetup() {
+    var d = [
+      { k: 'easy', t: '쉬움', s: '정답을 강하게 가리키는 힌트' },
+      { k: 'normal', t: '보통', s: '표준 난이도' },
+      { k: 'hard', t: '어려움', s: '후보들이 비슷하게 걸리는 낚시 힌트' }
+    ];
+    return '<div class="card">' +
+      '<div class="card-head"><div class="card-title"><span class="dot"></span>AI 출제자와 대결</div>' +
+      '<span class="badge gold">라운드 ' + S.round + '</span></div>' +
+      '<p class="lead">AI가 후보 5개 중 하나를 <b>히든 워드</b>로 숨깁니다. 공개되는 힌트와 유사도만으로 어느 단어인지 추리하세요. ' +
+      '<b>95%를 넘는 힌트</b>가 나오면 힌트 제시가 그 즉시 끝납니다.</p>' +
+      '<div class="difftabs">' + d.map(function (x) {
+        return '<button class="difftab' + (S.diff === x.k ? ' on' : '') + '" data-act="diff" data-diff="' + x.k + '">' + x.t + '<small>' + x.s + '</small></button>';
+      }).join('') + '</div>' +
+      '<button class="btn primary wide" data-act="startGuesser" style="margin-top:6px">라운드 시작</button>' +
+      '</div>' +
+      '<div class="card">' +
+      '<div class="card-head"><div class="card-title"><span class="dot"></span>승점 구조</div></div>' +
+      '<div class="kv">' +
+      '<b>1차</b><span>힌트 1~3개 공개 후 정답 → 3점</span>' +
+      '<b>2차</b><span>힌트 4~7개 공개 후 정답 → 2점</span>' +
+      '<b>3차</b><span>힌트 8~10개 공개 후 정답 → 1점</span>' +
+      '<b>실패</b><span>못 맞추면 AI 출제자가 같은 승점 획득</span>' +
+      '<b>2라운드</b><span>모든 승점 2배</span>' +
+      '<b>피스</b><span>1개 사용 시 답안 1개 추가 (게임당 2개)</span>' +
+      '</div></div>';
+  }
+
+  function chipsHTML(g) {
+    return '<div class="cands">' + g.cands.map(function (c, i) {
+      var on = g.sel.indexOf(c.n) >= 0;
+      var cls = 'chip';
+      if (on) cls += ' sel';
+      if (g.done) {
+        if (c.n === g.hidden) cls += ' answer-ok';
+        else if (!on) cls += ' dimmed';
+      }
+      return '<button class="' + cls + '" data-act="pick" data-word="' + esc(c.n) + '">' +
+        '<span class="tag">' + String.fromCharCode(65 + i) + '</span>' +
+        (on ? '<span class="pick">✓</span>' : '') +
+        '<div class="w">' + esc(c.n) + '</div>' +
+        (g.done && c.n === g.hidden ? '<div class="hintline" style="color:#5ee0a0">히든 워드</div>' : '') +
+        '</button>';
+    }).join('') + '</div>';
+  }
+
+  function hintsHTML(g) {
+    if (!g.hints.length) {
+      return '<div class="hint-empty">아직 힌트가 없습니다.<br>“힌트 받기”를 눌러 AI 출제자의 힌트를 확인하세요.</div>';
+    }
+    var show = g.hints.slice(0, g.shown);
+    var topIdx = 0;
+    show.forEach(function (h, i) { if (h.total > show[topIdx].total) topIdx = i; });
+    return '<div class="hints">' + show.map(function (h, i) {
+      var isTop = (g.reveal || g.done) && i === topIdx;
+      return '<div class="hint' + (isTop ? ' top' : '') + '">' +
+        '<div class="no">' + (i + 1) + '</div>' +
+        '<div class="body">' +
+        '<div class="wline"><span class="w">' + esc(h.word) + '</span>' +
+        '<span class="s" style="color:' + scoreColor(h.total) + '">' + h.total + '%</span></div>' +
+        '<div class="bar"><i style="width:' + h.total + '%;background:' + barColor(h.total) + '"></i></div>' +
+        (isTop ? '<div style="font-size:10.5px;color:#e2b74e;margin-top:5px">가장 유사한 힌트 · 강조 공개</div>' : '') +
+        '</div></div>';
+    }).join('') + '</div>';
+  }
+
+  function guesserBoard(g) {
+    var shown = g.shown;
+    var st = stageOf(Math.max(1, shown));
+    var out = '';
+
+    out += '<div class="card">' +
+      '<div class="card-head"><div class="card-title"><span class="dot"></span>후보 단어</div>' +
+      '<span class="badge">' + shown + ' / 10 힌트</span></div>' +
+      chipsHTML(g) +
+      '<p class="lead" style="margin:11px 0 0">정답이라고 생각하는 단어를 탭하세요.' +
+      (g.piece ? ' <b style="color:#9becf6">피스 사용 중 — 2개까지 선택됩니다.</b>' : '') + '</p>' +
+      '</div>';
+
+    out += '<div class="card">' +
+      '<div class="card-head"><div class="card-title"><span class="dot"></span>AI 출제자의 힌트</div>' +
+      '<span class="badge ' + (g.reveal ? 'gold' : '') + '">' + stageName(st) + '</span></div>' +
+      '<div class="stagebar">' +
+      [1, 2, 3].map(function (k) {
+        return '<div class="stage' + (st === k ? ' on' : '') + '">' + k + '차</div>';
+      }).join('') + '</div>' +
+      hintsHTML(g) +
+      (!g.done ? '<div class="row grow" style="margin-top:12px">' +
+        '<button class="btn primary" data-act="hint" ' + (shown >= 10 || g.reveal ? 'disabled' : '') + '>힌트 받기</button>' +
+        '<button class="btn ghost" data-act="finishHints" ' + (g.reveal || shown === 0 ? 'disabled' : '') + '>힌트 종료</button>' +
+        '</div>' : '') +
+      (g.reveal && !g.done ? '<p class="note gold">힌트 제시가 끝났습니다. 가장 유사한 힌트가 강조 공개되었습니다. 이제 정답을 제출하세요.</p>' : '') +
+      '</div>';
+
+    if (g.done) {
+      out += resultCardGuesser(g);
+    } else {
+      out += '<div class="card">' +
+        '<div class="card-head"><div class="card-title"><span class="dot"></span>정답 제출</div>' +
+        '<span class="badge">' + (g.sel.length ? g.sel.map(esc).join(' · ') : '후보를 선택하세요') + '</span></div>' +
+        '<div class="row grow">' +
+        '<button class="btn ' + (g.piece ? 'cyan' : 'ghost') + '" data-act="piece" ' + (S.pieces <= 0 && !g.piece ? 'disabled' : '') + '>' +
+        (g.piece ? '피스 사용 중' : '피스 사용') + ' (' + S.pieces + ')</button>' +
+        '<button class="btn primary" data-act="submitGuess" ' + (g.sel.length === 0 || shown === 0 ? 'disabled' : '') + '>정답 제출</button>' +
+        '</div>' +
+        '<p class="lead" style="margin:10px 0 0">' + (shown === 0
+          ? '힌트를 최소 1개는 확인해야 제출할 수 있습니다.'
+          : '제출하면 이번 라운드가 끝납니다. 정답이면 승점, 틀리면 AI 출제자가 승점을 가져갑니다.') + '</p>' +
+        '</div>';
+    }
+    return out;
+  }
+
+  function resultCardGuesser(g) {
+    var r = g.result;
+    var hit = r.hit;
+    return '<div class="card">' +
+      '<div class="result">' +
+      '<div class="big ' + (hit ? 'ok' : 'no') + '">' + (hit ? '정답' : '오답') + '</div>' +
+      '<div class="sm">히든 워드는 <b style="color:#f8e0a0">' + esc(g.hidden) + '</b> 이었습니다.</div>' +
+      '<div class="sm">제출: ' + g.sel.map(esc).join(', ') + ' · ' + stageName(r.stage) + '</div>' +
+      '<div class="sm" style="margin-top:8px">' + (hit
+        ? '나 <span class="coin">+' + r.pts + '</span>점'
+        : 'AI 출제자 <span class="coin">+' + r.pts + '</span>점') + '</div>' +
+      '<div class="sm" style="margin-top:4px;color:#8a8aa0">현재 스코어 · 나 <b style="color:#f8e0a0">' + S.me + '</b> : <b style="color:#9becf6">' + S.ai + '</b> AI</div>' +
+      '</div>' +
+      '<div class="divider"></div>' +
+      '<div class="row grow">' +
+      '<button class="btn primary" data-act="nextRound">' + (S.round >= S.rounds ? '결과 확인 · 새 게임' : '다음 라운드') + '</button>' +
+      '</div>' +
+      '</div>';
+  }
+
+  function startGuesser() {
+    var seed = (Date.now() ^ 0x9e3779b9) >>> 0;
+    var rng = HW.bySeed(seed);
+    var pick = null;
+    for (var attempt = 0; attempt < 60; attempt++) {
+      var w = HW.randomWord(rng);
+      var c = HW.candidates(w, 5, rng);
+      if (!c || c.length < 5) continue;
+      var names = c.map(function (x) { return x.n; });
+      var hs = HW.generateHints(w, names, S.diff, 10, (seed + attempt * 7919) >>> 0);
+      if (hs.length >= 7) { pick = { hidden: w, cands: c, hints: hs }; break; }
+    }
+    if (!pick) { toast('힌트 생성에 실패했습니다. 다시 시도해 주세요.'); return; }
+    if (S.diff === 'easy') {
+      var namesNow = pick.cands.map(function (x) { return x.n; });
+      var all = HW.words();
+      for (var q = 0; q < all.length; q++) {
+        if (all[q] === pick.hidden || namesNow.indexOf(all[q]) >= 0) continue;
+        var ss = HW.sim(pick.hidden, all[q]);
+        if (ss.total > 95) {
+          pick.hints.splice(Math.min(1, pick.hints.length), 0, {
+            word: all[q], total: ss.total, disc: ss.total, other: 0, otherName: '', blunder: true
+          });
+          if (pick.hints.length > 10) pick.hints = pick.hints.slice(0, 10);
+          break;
+        }
+      }
+    }
+    S.g = {
+      hidden: pick.hidden,
+      cands: pick.cands,
+      hints: pick.hints,
+      shown: 0,
+      reveal: false,
+      done: false,
+      sel: [],
+      piece: false,
+      result: null,
+      seed: seed
+    };
+    render();
+  }
+
+  function drawHint() {
+    var g = S.g;
+    if (!g || g.done || g.reveal) return;
+    if (g.shown >= g.hints.length) {
+      g.reveal = true;
+      render();
+      return;
+    }
+    var h = g.hints[g.shown];
+    g.shown++;
+    if (h.total > 95) {
+      g.reveal = true;
+      toast('95% 초과 힌트 — 힌트 제시가 즉시 종료됩니다.');
+    } else if (g.shown >= 10 || g.shown >= g.hints.length) {
+      g.reveal = true;
+    }
+    render();
+  }
+
+  function pickCandidate(w) {
+    var g = S.g;
+    if (!g || g.done) return;
+    var maxSel = g.piece ? 2 : 1;
+    var i = g.sel.indexOf(w);
+    if (i >= 0) {
+      g.sel.splice(i, 1);
+    } else {
+      if (g.sel.length >= maxSel) g.sel.shift();
+      g.sel.push(w);
+    }
+    render();
+  }
+
+  function togglePiece() {
+    var g = S.g;
+    if (!g || g.done) return;
+    if (!g.piece && S.pieces <= 0) { toast('남은 피스가 없습니다.'); return; }
+    g.piece = !g.piece;
+    if (!g.piece && g.sel.length > 1) g.sel = g.sel.slice(0, 1);
+    render();
+  }
+
+  function submitGuess() {
+    var g = S.g;
+    if (!g || g.done) return;
+    if (!g.sel.length) { toast('후보를 선택하세요.'); return; }
+    if (g.piece && S.pieces > 0) S.pieces--;
+    var stage = stageOf(Math.max(1, g.shown));
+    var pts = stagePoint(stage) * mult();
+    var hit = g.sel.indexOf(g.hidden) >= 0;
+    g.done = true;
+    g.reveal = true;
+    g.result = { hit: hit, stage: stage, pts: pts };
+    if (hit) S.me += pts; else S.ai += pts;
+    render();
+  }
+
+  function viewGuesser() { return S.g ? guesserBoard(S.g) : guesserSetup(); }
+
+  /* ---------------- mode 2 : setter ---------------- */
+  function viewSetter() {
+    var g = S.g2;
+    if (!g.cands) return setterSetup();
+    if (!g.hidden) return setterChoose();
+    return setterBoard(g);
+  }
+
+  function setterSetup() {
+    return '<div class="card">' +
+      '<div class="card-head"><div class="card-title"><span class="dot"></span>내가 출제자</div>' +
+      '<span class="badge gold">라운드 ' + S.round + '</span></div>' +
+      '<p class="lead">후보 5개 중 하나를 <b>히든 워드</b>로 정하고 힌트를 냅니다. 힌트의 유사도는 공개되지만 정답은 숨겨집니다. ' +
+      'AI 플레이어 3명이 공개된 힌트로 후보를 좁혀 정답을 제출합니다.</p>' +
+      '<div class="inline">' +
+      '<div class="field"><label>직접 입력 (선택)</label><input id="setterWord" type="text" list="wordlist" placeholder="예: 항구" autocomplete="off"></div>' +
+      '<button class="btn ghost" data-act="setterCustom">이 단어로 시작</button>' +
+      '</div>' +
+      '<div class="divider"></div>' +
+      '<button class="btn primary wide" data-act="setterRandom">랜덤 후보 5개 받기</button>' +
+      '</div>' +
+      '<div class="card">' +
+      '<div class="card-head"><div class="card-title"><span class="dot"></span>AI 플레이어</div></div>' +
+      '<div class="personas">' + HW.personas.map(function (p) {
+        return '<div class="persona"><div class="ph"><div><span class="nm">' + p.name + '</span> <span class="st">' + p.style + '</span></div></div>' +
+          '<div class="say">' + p.desc + '</div></div>';
+      }).join('') + '</div></div>';
+  }
+
+  function setterChoose() {
+    var g = S.g2;
+    return '<div class="card">' +
+      '<div class="card-head"><div class="card-title"><span class="dot"></span>히든 워드 정하기</div>' +
+      '<span class="badge">후보 5개</span></div>' +
+      '<p class="lead">이 중 하나를 히든 워드로 선택하세요. 선택한 단어는 AI에게 공개되지 않습니다.</p>' +
+      '<div class="cands">' + g.cands.map(function (c, i) {
+        return '<button class="chip" data-act="setHidden" data-word="' + esc(c.n) + '">' +
+          '<span class="tag">' + String.fromCharCode(65 + i) + '</span>' +
+          '<div class="w">' + esc(c.n) + '</div></button>';
+      }).join('') + '</div>' +
+      '<div class="row grow" style="margin-top:12px"><button class="btn ghost" data-act="setterRandom">다른 후보</button></div>' +
+      '</div>';
+  }
+
+  function setterBoard(g) {
+    var out = '';
+    var n = g.hints.length;
+    var st = stageOf(Math.max(1, n));
+    out += '<div class="card">' +
+      '<div class="card-head"><div class="card-title"><span class="dot"></span>내 히든 워드</div>' +
+      '<span class="badge gold">' + esc(g.hidden) + '</span></div>' +
+      '<p class="lead" style="margin:0">후보: ' + g.cands.map(function (c) { return esc(c.n); }).join(' · ') + '</p>' +
+      '</div>';
+
+    out += '<div class="card">' +
+      '<div class="card-head"><div class="card-title"><span class="dot"></span>힌트 제시</div>' +
+      '<span class="badge ' + (g.ended ? 'gold' : '') + '">' + stageName(st) + '</span></div>' +
+      '<div class="stagebar">' + [1, 2, 3].map(function (k) {
+        return '<div class="stage' + (st === k ? ' on' : '') + '">' + k + '차</div>';
+      }).join('') + '</div>' +
+      (g.hints.length ? '<div class="hints">' + (function () {
+        var top = 0;
+        g.hints.forEach(function (h, i) { if (h.total > g.hints[top].total) top = i; });
+        return g.hints.map(function (h, i) {
+        var hot = h.total > 95 || (g.ended && i === top);
+        return '<div class="hint' + (hot ? ' top' : '') + '">' +
+          '<div class="no">' + (i + 1) + '</div><div class="body">' +
+          '<div class="wline"><span class="w">' + esc(h.word) + '</span>' +
+          '<span class="s" style="color:' + scoreColor(h.total) + '">' + h.total + '%</span></div>' +
+          '<div class="bar"><i style="width:' + h.total + '%;background:' + barColor(h.total) + '"></i></div>' +
+          '<div style="font-size:10.5px;color:#7d7d94;margin-top:4px">' + esc(h.relType) +
+          ' · 다른 후보 최대 ' + (h.otherMax != null ? h.otherMax + '%' : '-') +
+          ' · <b style="color:' + (h.disc != null && Math.abs(h.disc) <= 10 ? '#5ee0a0' : '#e2b74e') + '">' +
+          (h.disc == null ? '' : (Math.abs(h.disc) <= 10 ? '변별력 낮음(모호)' : '변별력 ' + (h.disc > 0 ? '+' : '') + h.disc)) + '</b></div>' +
+          '</div></div>';
+        }).join('');
+      })() + '</div>' : '<div class="hint-empty">아직 힌트가 없습니다. 한 단어씩 제시해 보세요.</div>') +
+      (!g.ended ? '<div class="inline" style="margin-top:12px">' +
+        '<div class="field"><label>힌트 단어</label><input id="hintInput" type="text" list="wordlist" placeholder="한국어 명사" autocomplete="off" value="' + esc(g.draft) + '"></div>' +
+        '<button class="btn primary" data-act="addHint">힌트 제시</button>' +
+        '</div>' +
+        '<div class="row grow" style="margin-top:8px">' +
+        '<button class="btn ghost" data-act="endSetter" ' + (g.hints.length === 0 ? 'disabled' : '') + '>힌트 종료하고 추리 받기</button>' +
+        '</div>' +
+        '<p class="lead" style="margin:10px 0 0">힌트 3개 → 1차 추리, 7개 → 2차 추리, 10개 또는 종료 시 3차 추리. ' +
+        '유사도 <b>95% 초과</b> 힌트는 즉시 제시가 끝납니다.</p>'
+        : '<p class="note gold">힌트 제시가 끝났습니다. AI들의 추리 결과를 확인하세요.</p>') +
+      '</div>';
+
+    out += aiLogHTML(g, st);
+    if (g.result) out += resultCardSetter(g);
+    return out;
+  }
+
+  function aiLogHTML(g, curStage) {
+    if (!g.aiLog.length) {
+      return '<div class="card"><div class="card-head"><div class="card-title"><span class="dot"></span>AI 추리</div>' +
+        '<span class="badge">대기</span></div>' +
+        '<p class="lead" style="margin:0">힌트를 3개 제시하면 1차 추리가 시작됩니다. AI들은 공개된 힌트와 유사도만 보고 후보를 좁힙니다.</p></div>';
+    }
+    var byStage = {};
+    g.aiLog.forEach(function (l) { (byStage[l.stage] = byStage[l.stage] || []).push(l); });
+    var out = '';
+    Object.keys(byStage).sort().forEach(function (k) {
+      out += '<div class="card">' +
+        '<div class="card-head"><div class="card-title"><span class="dot"></span>' + k + '차 추리</div>' +
+        '<span class="badge ' + (S.g2.result && S.g2.result.by === 'ai' && S.g2.result.stage === Number(k) ? 'red' : '') + '">' +
+        stageName(Number(k)) + '</span></div>' +
+        '<p class="lead" style="margin:-4px 0 10px;font-size:12px">후보 옆 %p는 공개된 유사도와 AI 예측의 오차입니다. 작을수록 AI가 유력하게 보는 후보입니다.</p>' +
+        '<div class="personas">' + byStage[k].map(function (l) {
+          return '<div class="persona' + (l.hit ? ' hit' : (l.passed ? '' : ' safe')) + '">' +
+            '<div class="ph"><div><span class="nm">' + l.name + '</span> <span class="st">' + l.style + '</span></div>' +
+            '<span class="badge ' + (l.guess ? (l.hit ? 'red' : 'gold') : '') + '">' +
+            (l.guess ? '제출 ' + l.guesses.map(esc).join(' / ') : '관망') + '</span></div>' +
+            '<div class="say">' + esc(l.note) + '</div>' +
+            '<div class="rank">' + l.ranking.map(function (r, i) {
+              return '<span class="' + (i === 0 ? 'first' : '') + '">' + esc(r.n) + ' ' + r.err + '%p</span>';
+            }).join('') + '</div>' +
+            '</div>';
+        }).join('') + '</div></div>';
+    });
+    return out;
+  }
+
+  function resultCardSetter(g) {
+    var r = g.result;
+    var win = r.by === 'me';
+    return '<div class="card"><div class="result">' +
+      '<div class="big ' + (win ? 'ok' : 'no') + '">' + (win ? '출제자 승' : 'AI 추리 성공') + '</div>' +
+      '<div class="sm">히든 워드는 <b style="color:#f8e0a0">' + esc(g.hidden) + '</b> 이었습니다.</div>' +
+      '<div class="sm">' + (win ? '아무도 맞추지 못했습니다.' : r.who + '이(가) 정답을 맞췄습니다.') + ' · ' + stageName(r.stage) + '</div>' +
+      '<div class="sm" style="margin-top:8px">' + (win
+        ? '나 <span class="coin">+' + r.pts + '</span>점'
+        : 'AI <span class="coin">+' + r.pts + '</span>점') + '</div>' +
+      '<div class="sm" style="margin-top:4px;color:#8a8aa0">현재 스코어 · 나 <b style="color:#f8e0a0">' + S.me + '</b> : <b style="color:#9becf6">' + S.ai + '</b> AI</div>' +
+      '</div><div class="divider"></div>' +
+      '<div class="row grow"><button class="btn primary" data-act="nextRound">' +
+      (S.round >= S.rounds ? '결과 확인 · 새 게임' : '다음 라운드') + '</button></div></div>';
+  }
+
+  function resetSetter(cands) {
+    S.g2 = { cands: cands || S.g2.cands, hidden: null, hints: [], resolved: 0, aiLog: [], result: null, ended: false, draft: '' };
+  }
+
+  function setterRandom() {
+    var seed = (Date.now() ^ 0x85ebca6b) >>> 0;
+    var rng = HW.bySeed(seed);
+    for (var i = 0; i < 40; i++) {
+      var w = HW.randomWord(rng);
+      var c = HW.candidates(w, 5, rng);
+      if (c && c.length === 5) { resetSetter(c); render(); return; }
+    }
+    toast('후보 생성에 실패했습니다. 다시 시도해 주세요.');
+  }
+
+  function setterCustom() {
+    var input = $('#setterWord');
+    var v = (input ? input.value : '').trim();
+    if (!v) { toast('단어를 입력하세요.'); return; }
+    if (v.length > 12) { toast('한국어 명사 한 단어로 입력하세요.'); return; }
+    var c = HW.candidates(v, 5, HW.bySeed(1234));
+    if (!c || c.length < 5) { toast('이 단어로는 후보 5개를 만들 수 없습니다. 다른 명사를 입력해 보세요.'); return; }
+    resetSetter(c);
+    S.g2.hidden = c[0].n;
+    render();
+  }
+
+  function chooseHidden(w) {
+    S.g2.hidden = w;
+    S.g2.hints = [];
+    S.g2.resolved = 0;
+    S.g2.aiLog = [];
+    S.g2.result = null;
+    S.g2.ended = false;
+    render();
+  }
+
+  function addHint() {
+    var g = S.g2;
+    if (g.ended) return;
+    var inp = $('#hintInput');
+    var v = (inp ? inp.value : g.draft || '').trim();
+    if (!v) { toast('힌트 단어를 입력하세요.'); return; }
+    if (v === g.hidden) { toast('히든 워드와 같은 단어는 힌트가 될 수 없습니다.'); return; }
+    if (g.hints.length >= 10) { toast('힌트는 최대 10개입니다.'); return; }
+    for (var i = 0; i < g.hints.length; i++) {
+      if (g.hints[i].word === v) { toast('이미 제시한 힌트입니다.'); return; }
+    }
+    var r = HW.sim(g.hidden, v);
+    var otherMax = 0, otherWord = '';
+    g.cands.forEach(function (c) {
+      if (c.n === g.hidden) return;
+      var cs = HW.sim(c.n, v);
+      if (cs.total > otherMax) { otherMax = cs.total; otherWord = c.n; }
+    });
+    g.hints.push({
+      word: v, total: r.total, sem: r.sem, ctx: r.ctx, rel: r.rel, relType: r.relType,
+      otherMax: otherMax, otherWord: otherWord, disc: r.total - otherMax
+    });
+    g.draft = '';
+    if (!HW.has(v)) toast('사전에 없는 단어 — 형태 유사도로 근사했습니다.');
+    var n = g.hints.length;
+    if (r.total > 95) {
+      toast('95% 초과 — 힌트 제시가 즉시 종료됩니다.');
+      resolveSetterStage(stageOf(n), true);
+    } else if (n === 3 || n === 7) {
+      resolveSetterStage(stageOf(n), false);
+    } else if (n === 10) {
+      resolveSetterStage(3, true);
+    }
+    render();
+  }
+
+  function endSetter() {
+    var g = S.g2;
+    if (!g.hints.length) { toast('힌트를 최소 1개는 제시해야 합니다.'); return; }
+    var st = stageOf(g.hints.length);
+    g.ended = true;
+    resolveSetterStage(st, true);
+    render();
+  }
+
+  function resolveSetterStage(stageNo, final) {
+    var g = S.g2;
+    if (g.result) return;
+    var names = g.cands.map(function (c) { return c.n; });
+    var hits = [];
+    HW.personas.forEach(function (p, idx) {
+      var seed = (stageNo * 7919 + idx * 101 + g.hints.length * 13 + 17) >>> 0;
+      var v = HW.aiVerdict(g.hints, names, p, seed);
+      var guesses = [];
+      if (v.guess) {
+        guesses.push(v.guess);
+        if (stageNo === 3) {
+          var second = v.ranking.filter(function (r) { return r.n !== v.guess; })[0];
+          if (second) guesses.push(second.n);
+        }
+      }
+      var hit = guesses.indexOf(g.hidden) >= 0;
+      if (hit) hits.push({ name: p.name, guess: g.hidden });
+      g.aiLog.push({
+        stage: stageNo, id: p.id, name: p.name, style: p.style, note: v.note,
+        guess: v.guess, guesses: guesses, ranking: v.ranking.slice(0, 3),
+        conf: v.conf, passed: v.passed, hit: hit
+      });
+    });
+    if (hits.length) {
+      var pts = stagePoint(stageNo) * mult();
+      S.ai += pts;
+      g.result = { by: 'ai', stage: stageNo, pts: pts, who: hits.map(function (h) { return h.name; }).join(', ') };
+      g.ended = true;
+    } else if (final) {
+      var pts2 = 3 * mult();
+      S.me += pts2;
+      g.result = { by: 'me', stage: stageNo, pts: pts2 };
+      g.ended = true;
+    }
+  }
+
+  /* ---------------- mode 3 : lab ---------------- */
+  function viewLab() {
+    var L = S.lab;
+    var out = '<div class="card">' +
+      '<div class="card-head"><div class="card-title"><span class="dot"></span>AI 유사도 테스트랩</div>' +
+      '<span class="badge">두 명사 비교</span></div>' +
+      '<p class="lead">두 한국어 명사를 넣으면 종합 유사도와 3대 지표, 힌트 전략 팁을 즉시 계산합니다. ' +
+      '고유명사가 아닌 일반 명사를 사용하세요.</p>' +
+      '<div class="labform">' +
+      '<div class="inline">' +
+      '<div class="field"><label>단어 A</label><input id="la" type="text" list="wordlist" autocomplete="off" value="' + esc(L.a) + '"></div>' +
+      '<div class="field"><label>단어 B</label><input id="lb" type="text" list="wordlist" autocomplete="off" value="' + esc(L.b) + '"></div>' +
+      '</div>' +
+      '<div class="row grow">' +
+      '<button class="btn primary" data-act="analyze">유사도 분석</button>' +
+      '<button class="btn ghost" data-act="swap">A ↔ B</button>' +
+      '<button class="btn ghost" data-act="randomLab">랜덤</button>' +
+      '</div></div></div>';
+
+    if (L.busy) out += '<div class="card"><p class="lead" style="text-align:center;margin:16px 0">임베딩 계산 중…</p></div>';
+    else if (L.res) out += labResult(L.res);
+
+    if (L.recent.length) {
+      out += '<div class="card"><div class="card-head"><div class="card-title"><span class="dot"></span>최근 분석</div></div><div class="recent">' +
+        L.recent.map(function (r) {
+          return '<div class="r"><span>' + esc(r.a) + ' ↔ ' + esc(r.b) + '</span><b>' + r.total + '%</b></div>';
+        }).join('') + '</div></div>';
+    }
+    return out;
+  }
+
+  function labResult(r) {
+    if (!r.ok) {
+      return '<div class="card"><div class="note warn">' + esc(r.err || '분석할 수 없습니다.') + '</div></div>';
+    }
+    var badge = r.total > 95 ? 'red' : (r.total >= 85 ? 'gold' : (r.total >= 65 ? 'cyan' : ''));
+    var badgeText = r.total > 95 ? '95% 초과 · 힌트 즉시 종료' : (r.total >= 85 ? '매우 강한 힌트' : (r.total >= 65 ? '적정 힌트 구간' : (r.total >= 40 ? '중간 강도' : '무관어')));
+    var tips = (r.tips || []).map(function (t) { return '<li>' + esc(t) + '</li>'; }).join('');
+
+    var alert = '';
+    if (r.total > 95) alert = '<div class="note warn">이 조합을 힌트로 내면 <b>95% 초과</b>로 힌트 제시가 그 즉시 종료됩니다. 정답이 거의 그대로 노출됩니다.</div>';
+    else if (r.total >= 85) alert = '<div class="note gold">85% 이상 — 힌트 1~2개만으로 정답이 드러날 수 있습니다.</div>';
+
+    var sug = '';
+    if (!r.same) {
+      var list = HW.generateHints(r.a, [r.a], 'normal', 5, 99);
+      if (list.length) {
+        sug = '<div class="divider"></div><div class="card-title" style="margin-bottom:8px"><span class="dot"></span>이 단어의 추천 힌트</div>' +
+          '<div class="hints">' + list.map(function (h) {
+            return '<div class="hint"><div class="no">·</div><div class="body">' +
+              '<div class="wline"><span class="w">' + esc(h.word) + '</span>' +
+              '<span class="s" style="color:' + scoreColor(h.total) + '">' + h.total + '%</span></div>' +
+              '<div class="bar"><i style="width:' + h.total + '%;background:' + barColor(h.total) + '"></i></div></div></div>';
+          }).join('') + '</div>';
+      }
+    }
+
+    return '<div class="card">' +
+      '<div class="card-head"><div class="card-title"><span class="dot"></span>' + esc(r.a) + ' ↔ ' + esc(r.b) + '</div>' +
+      '<span class="badge ' + badge + '">' + badgeText + '</span></div>' +
+      '<div class="gaugewrap">' +
+      '<div class="gauge ' + gaugeClass(r.total) + '" style="--p:' + r.total + '">' +
+      '<div class="val"><b>' + r.total + '<span>%</span></b><em>SIMILARITY</em></div></div>' +
+      '<div class="metrics">' +
+      '<div class="metric"><div class="k">① 의미적 거리</div><div class="v">' + r.semDist + '</div>' +
+      '<div class="sub">범주 의미 벡터 거리 (낮을수록 유사)</div><div class="mbar"><i style="width:' + r.sem + '%"></i></div></div>' +
+      '<div class="metric"><div class="k">② 문맥적 공생</div><div class="v">' + r.ctx + '</div>' +
+      '<div class="sub">함께 쓰이는 정도</div><div class="mbar"><i style="width:' + r.ctx + '%"></i></div></div>' +
+      '<div class="metric"><div class="k">③ 관계적 구조</div><div class="v">' + r.rel + '</div>' +
+      '<div class="sub">' + esc(r.relType) + '</div><div class="mbar"><i style="width:' + r.rel + '%"></i></div></div>' +
+      '</div></div>' +
+      '<div class="legend">' +
+      '<span><i style="background:#4fd8e8"></i>40~70 중간</span>' +
+      '<span><i style="background:#e2b74e"></i>70~85 강함</span>' +
+      '<span><i style="background:#ff5470"></i>95 초과 위험</span>' +
+      '<span>형태 유사도 ' + r.lex + '%</span>' +
+      (r.remote ? '<span>· ' + esc(r.remoteModel || '') + '</span>' : '') +
+      '</div>' +
+      alert +
+      (tips ? '<ul class="tips">' + tips + '</ul>' : '') +
+      sug +
+      '</div>';
+  }
+
+  function analyze() {
+    var a = ($('#la') ? $('#la').value : S.lab.a).trim();
+    var b = ($('#lb') ? $('#lb').value : S.lab.b).trim();
+    if (!a || !b) { toast('두 단어를 모두 입력하세요.'); return; }
+    S.lab.a = a; S.lab.b = b; S.lab.busy = true;
+    render();
+    var useRemote = HW.remote.on && HW.remote.key;
+    var p = useRemote ? HW.simAsync(a, b) : Promise.resolve(HW.sim(a, b));
+    p.then(function (r) {
+      S.lab.res = r;
+      S.lab.busy = false;
+      if (r.ok) {
+        S.lab.recent.unshift({ a: r.a, b: r.b, total: r.total });
+        if (S.lab.recent.length > 5) S.lab.recent.pop();
+      }
+      render();
+    }).catch(function (e) {
+      S.lab.busy = false;
+      toast('분석 실패: ' + (e && e.message ? e.message : '알 수 없는 오류'));
+      render();
+    });
+  }
+
+  /* ---------------- modals ---------------- */
+  function rulesModal() {
+    openModal('히든 워드 · 게임 룰', '' +
+      '<p>데블스 플랜 3(데드 어게인) 5일차 메인매치 &lt;히든 워드&gt;를 옮긴 구현입니다. ' +
+      'AI가 산출하는 단어 간 유사도(%)를 이용해 <b>내 히든 워드는 숨기고, 상대의 히든 워드는 맞히는</b> 게임입니다.</p>' +
+      '<h3>1. 단어 제약</h3>' +
+      '<ul><li>고유명사가 아닌 <b>한국어 명사</b>만 사용합니다.</li>' +
+      '<li>출제자는 후보 명사 5개 중 1개를 히든 워드로 선택합니다(직접 입력도 가능).</li></ul>' +
+      '<h3>2. 힌트 제시</h3>' +
+      '<ul><li>출제자는 힌트 단어를 <b>최대 10개</b>까지 제시합니다.</li>' +
+      '<li>힌트마다 히든 워드와의 AI 유사도(%)가 즉시 공개됩니다.</li>' +
+      '<li>유사도가 <b>95%를 초과</b>하는 힌트가 나오면 그 즉시 힌트 제시가 종료됩니다.</li>' +
+      '<li>10개 안에 95% 초과가 없으면 유사도가 가장 높은 힌트가 <b>강조 공개</b>됩니다.</li></ul>' +
+      '<h3>3. 승점</h3>' +
+      '<table><tr><th>제출 시점</th><th>승점</th></tr>' +
+      '<tr><td>1차 (힌트 1~3개)</td><td>3점</td></tr>' +
+      '<tr><td>2차 (힌트 4~7개)</td><td>2점</td></tr>' +
+      '<tr><td>3차 (힌트 8~10개)</td><td>1점</td></tr>' +
+      '<tr><td>2라운드</td><td>모든 승점 ×2</td></tr></table>' +
+      '<ul><li>기본 답안 1개, <b>피스</b> 1개를 쓰면 답안 1개 추가(단어당 피스 최대 1개, 게임당 2개).</li>' +
+      '<li>맞히면 추리자가 승점을 얻고, 아무도 못 맞히면 출제자가 승점을 얻습니다.</li></ul>' +
+      '<h3>4. 3대 지표</h3>' +
+      '<ul><li><b>① 의미적 거리</b> — 의미 축에서 얼마나 떨어져 있는지(낮을수록 유사).</li>' +
+      '<li><b>② 문맥적 공생</b> — 실제로 함께 쓰이는 문맥의 겹침.</li>' +
+      '<li><b>③ 관계적 구조</b> — 동의어·반의어·상위어-하위어·공기어 관계.</li></ul>' +
+      '<h3>5. 플레이 모드</h3>' +
+      '<ul><li><b>추리자</b> — AI 출제자의 힌트로 후보 5개 중 정답을 맞힙니다.</li>' +
+      '<li><b>출제자</b> — 내가 힌트를 내고 AI 플레이어 3명(경렬·동민·존박)을 속입니다.</li>' +
+      '<li><b>테스트랩</b> — 두 단어의 유사도와 지표를 자유롭게 측정합니다.</li></ul>' +
+      '<h3>6. 구현 메모</h3>' +
+      '<ul><li>1~3차 승점은 <b>제출 시점에 공개된 힌트 수</b>로 정했습니다(힌트가 적을수록 고득점).</li>' +
+      '<li>테스트랩에서 힌트와 후보를 직접 비교하면 정답이 보입니다. 추리자 모드는 스스로 금지하고 즐겨 주세요.</li>' +
+      '<li>쉬움 난이도에서는 AI 출제자가 가끔 95% 초과 힌트를 내 실수합니다.</li></ul>' +
+      '<p class="note">유사도 엔진은 외부 서버 없이 내장된 한국어 Word2Vec 방식(의미 벡터 + 관계 그래프 + 형태소 휴리스틱)으로 계산됩니다. ' +
+      '실제 방송의 AI 모델과 수치는 다를 수 있습니다.</p>');
+  }
+
+  function settingsModal() {
+    var r = HW.remote;
+    openModal('설정', '' +
+      '<h3>실시간 임베딩 (선택)</h3>' +
+      '<p>OpenAI 임베딩으로 명사 유사도를 계산합니다. 키는 <b>이 브라우저(localStorage)에만</b> 저장되고, 요청은 OpenAI로만 전송됩니다.</p>' +
+      '<div class="field"><label>OpenAI API 키</label><input id="setKey" type="password" placeholder="sk-..." value="' + esc(r.key || '') + '"></div>' +
+      '<div class="field" style="margin-top:10px"><label>모델</label><select id="setModel">' +
+      '<option value="text-embedding-3-small"' + (r.model === 'text-embedding-3-small' ? ' selected' : '') + '>text-embedding-3-small</option>' +
+      '<option value="text-embedding-3-large"' + (r.model === 'text-embedding-3-large' ? ' selected' : '') + '>text-embedding-3-large</option>' +
+      '</select></div>' +
+      '<label style="display:flex;gap:9px;align-items:center;margin-top:14px;font-size:13.5px;color:#dcdce8">' +
+      '<input type="checkbox" id="setOn" ' + (r.on ? 'checked' : '') + ' style="width:18px;height:18px;accent-color:#e2b74e">' +
+      '테스트랩에서 실시간 임베딩 사용</label>' +
+      '<div class="row grow" style="margin-top:16px">' +
+      '<button class="btn primary" data-act="saveSettings">저장</button>' +
+      '<button class="btn ghost" data-act="testRemote">키 테스트</button>' +
+      '</div>' +
+      '<p class="note">모드 1·2는 AI 판정의 일관성을 위해 항상 내장 엔진을 사용합니다. 실시간 임베딩은 테스트랩 전용입니다. ' +
+      '키를 비우면 내장 엔진만 사용합니다.</p>');
+  }
+
+  function saveSettings() {
+    var key = ($('#setKey') ? $('#setKey').value : '').trim();
+    var model = $('#setModel') ? $('#setModel').value : 'text-embedding-3-small';
+    var on = $('#setOn') ? $('#setOn').checked : false;
+    if (on && !key) { toast('키를 입력해야 실시간 임베딩을 켤 수 있습니다.'); return; }
+    HW.setRemote({ key: key, model: model, on: on });
+    toast(on ? '저장했습니다. 테스트랩에서 실시간 임베딩을 사용합니다.' : '저장했습니다. 내장 엔진을 사용합니다.');
+    closeModal();
+    render();
+  }
+
+  function testRemote() {
+    var key = ($('#setKey') ? $('#setKey').value : '').trim();
+    var model = $('#setModel') ? $('#setModel').value : 'text-embedding-3-small';
+    if (!key) { toast('API 키를 먼저 입력하세요.'); return; }
+    HW.setRemote({ key: key, model: model, on: true });
+    toast('연결 확인 중…');
+    HW.simAsync('바다', '파도').then(function (r) {
+      if (r && r.remote) toast('연결 성공 · 바다↔파도 ' + r.total + '% (' + model + ')');
+      else toast('연결 실패 — 키/네트워크를 확인하세요. 내장 엔진으로 대체됩니다.');
+    });
+  }
+
+  /* ---------------- events ---------------- */
+  function nextRound() {
+    if (S.round >= S.rounds) {
+      S.round = 1; S.me = 0; S.ai = 0; S.pieces = 2;
+      S.g = null;
+      resetSetter(null);
+      toast('새 게임을 시작합니다.');
+    } else {
+      S.round++;
+      S.g = null;
+      resetSetter(null);
+    }
+    render();
+  }
+
+  document.addEventListener('click', function (e) {
+    var t = e.target.closest ? e.target.closest('[data-act]') : null;
+    if (!t) {
+      if (e.target && e.target.id === 'modal') closeModal();
+      return;
+    }
+    var act = t.getAttribute('data-act');
+    switch (act) {
+      case 'mode':
+        S.mode = t.getAttribute('data-mode');
+        render();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        break;
+      case 'rules': rulesModal(); break;
+      case 'settings': settingsModal(); break;
+      case 'closeModal': closeModal(); break;
+      case 'diff': S.diff = t.getAttribute('data-diff'); render(); break;
+      case 'startGuesser': startGuesser(); break;
+      case 'hint': drawHint(); break;
+      case 'finishHints':
+        if (S.g) { S.g.reveal = true; render(); }
+        break;
+      case 'pick': pickCandidate(t.getAttribute('data-word')); break;
+      case 'piece': togglePiece(); break;
+      case 'submitGuess': submitGuess(); break;
+      case 'nextRound': nextRound(); break;
+      case 'setterRandom': setterRandom(); break;
+      case 'setterCustom': setterCustom(); break;
+      case 'setHidden': chooseHidden(t.getAttribute('data-word')); break;
+      case 'addHint': addHint(); break;
+      case 'endSetter': endSetter(); break;
+      case 'analyze': analyze(); break;
+      case 'swap':
+        S.lab.a = ($('#lb') ? $('#lb').value : S.lab.a);
+        S.lab.b = ($('#la') ? $('#la').value : S.lab.b);
+        S.lab.res = null;
+        render();
+        break;
+      case 'randomLab':
+        var rnd = HW.bySeed((Date.now() ^ 0x2545f491) >>> 0);
+        S.lab.a = HW.randomWord(rnd);
+        var second = HW.randomWord(rnd);
+        S.lab.b = second === S.lab.a ? HW.randomWord(rnd) : second;
+        S.lab.res = null;
+        render();
+        break;
+      case 'saveSettings': saveSettings(); break;
+      case 'testRemote': testRemote(); break;
+      default: break;
+    }
+  });
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') { if (!$('#modal').classList.contains('hidden')) closeModal(); return; }
+    if (e.key !== 'Enter') return;
+    var id = e.target && e.target.id;
+    if (id === 'hintInput') { e.preventDefault(); addHint(); }
+    else if (id === 'la' || id === 'lb') { e.preventDefault(); analyze(); }
+    else if (id === 'setterWord') { e.preventDefault(); setterCustom(); }
+  });
+
+  /* ---------------- boot ---------------- */
+  function boot() {
+    var dl = $('#wordlist');
+    if (dl) {
+      var words = HW.words();
+      var frag = document.createDocumentFragment();
+      for (var i = 0; i < words.length; i++) {
+        var o = document.createElement('option');
+        o.value = words[i];
+        frag.appendChild(o);
+      }
+      dl.appendChild(frag);
+    }
+    render();
+  }
+
+  // expose a tiny debugging surface (harmless in production)
+  window.HWApp = { state: S, render: render, renderScore: renderScorebarOnly };
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
+  else boot();
+})();
+
+</script>
+</body>
+</html>
